@@ -1,0 +1,17 @@
+<resources>
+
+    <string name="app_name">TimeTracker</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_time_tracker_activity">TimeTrackerActivity</string>
+    <string name="name">Name</string>
+    <string name="calendar">Calendar</string>
+    <string name="time">12 AM</string>
+    <string name="duration">15 m</string>
+    <string name="stop">Stop</string>
+    <string name="start">Start</string>
+    <string name="resume">Resume</string>
+    <string name="save">Save</string>
+    <string name="empty"></string>
+    <string name="cancel">Cancel</string>
+
+</resources>
