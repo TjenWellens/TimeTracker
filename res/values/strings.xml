@@ -8,10 +8,23 @@
     <string name="time">12 AM</string>
     <string name="duration">15 m</string>
     <string name="stop">Stop</string>
-    <string name="start">Start</string>
+    <string name="start">New</string>
     <string name="resume">Resume</string>
     <string name="save">Save</string>
     <string name="empty"></string>
     <string name="cancel">Cancel</string>
+    <string name="hintName">name of activity</string>
+    <string name="hintCalendar">calendar name</string>
+    <string name="hintStart">start-time</string>
+    <string name="hintDuration">duration</string>
+    <string name="edit">Edit</string>
+    <string name="details">Details</string>
+    <string name="macro">Macro</string>
+    <string name="running">running</string>
+    <string name="ok">OK</string>
+    <string name="startTime">Begin</string>
+    <string name="stopTime">End</string>
+    <string name="endTimeExample">15:45</string>
+    <string name="beginTimeExample">14:45</string>
 
 </resources>

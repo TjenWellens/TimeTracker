@@ -13,7 +13,7 @@ import java.util.Date;
  *
  * @author tjen
  */
-public class Activiteit
+public class Activiteit implements ActiviteitI
 {
 
     private static long activityCounter = 0;
@@ -25,6 +25,7 @@ public class Activiteit
     private long endTimeMillis;
     private String title;
     private long id;
+    private String description = null;
 
     public Activiteit()
     {
@@ -36,7 +37,8 @@ public class Activiteit
         this.running = true;
     }
 
-    public boolean stop()
+    @Override
+    public boolean stopRunning()
     {
         if (running)
         {
@@ -49,7 +51,8 @@ public class Activiteit
         }
     }
 
-    public boolean resume()
+    @Override
+    public boolean resumeRunning()
     {
         if (!running)
         {
@@ -62,22 +65,30 @@ public class Activiteit
         }
     }
 
-    public Evenement getEvent()
+    @Override
+    public Evenement getEvenement()
     {
         if (!running && kalender != null)
         {
-            return new Evenement(kalender.getId(), title, startTimeMillis, endTimeMillis);
+            Evenement e = new Evenement(kalender.getId(), title, startTimeMillis, endTimeMillis);
+            if (description != null)
+            {
+                e.setDescription(description);
+            }
+            return e;
         } else
         {
             return null;
         }
     }
 
+    @Override
     public void setKalender(Kalender kalender)
     {
         this.kalender = kalender;
     }
 
+    @Override
     public void setEndTimeMillis(long endTimeMillis)
     {
         this.endTimeMillis = endTimeMillis;
@@ -88,11 +99,18 @@ public class Activiteit
         this.startTimeMillis = startTimeMillis;
     }
 
-    public void setTitle(String title)
+    @Override
+    public void setActiviteitTitle(String title)
     {
         this.title = title;
     }
 
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    @Override
     public String getDuration()
     {
         if (endTimeMillis < 0)
@@ -130,6 +148,7 @@ public class Activiteit
         return s;
     }
 
+    @Override
     public String getKalenderName()
     {
         if (kalender == null)
@@ -139,11 +158,26 @@ public class Activiteit
         return kalender.getName();
     }
 
-    public String getStart()
+    @Override
+    public String getStartTime()
     {
+        return timeToString(startTimeMillis);
+    }
+
+    @Override
+    public String getStopTime()
+    {
+        return timeToString(endTimeMillis);
+    }
+    
+    private String timeToString(long millis)
+    {
+        if(millis<0)
+        {
+            return null;
+        }
         Calendar c = Calendar.getInstance();
-        c.setTime(new Date(startTimeMillis));
-        String s = "";
+        c.setTime(new Date(millis));
         int hours = c.get(Calendar.HOUR_OF_DAY);
         int minutes = c.get(Calendar.MINUTE);
         String mins = String.valueOf(minutes);
@@ -154,18 +188,26 @@ public class Activiteit
         return String.valueOf(hours) + ":" + mins;
     }
 
-    public String getTitle()
+    @Override
+    public String getActiviteitTitle()
     {
         return title;
     }
 
-    public long getId()
+    @Override
+    public long getActiviteitId()
     {
         return id;
     }
 
-    public boolean isEnded()
+    @Override
+    public boolean isRunning()
     {
-        return endTimeMillis > 0;
+        return running;
+    }
+
+    public String getDescription()
+    {
+        return description;
     }
 }
