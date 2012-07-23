@@ -1,7 +1,8 @@
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="eu.tjenwellens.timetracker"
-    android:versionCode="2"
-    android:versionName="2.0" >
+          package="eu.tjenwellens.timetracker"
+          android:versionCode="2"
+          android:versionName="2.0" >
 
     <uses-permission android:name="android.permission.READ_CALENDAR" >
     </uses-permission>
@@ -25,6 +26,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".PreferencesActivity"
+            android:label="Preferences" >
         </activity>
     </application>
 

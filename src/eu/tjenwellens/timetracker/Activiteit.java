@@ -13,7 +13,7 @@ import java.util.Date;
  *
  * @author tjen
  */
-public class Activiteit implements ActiviteitI
+public class Activiteit implements ActiviteitI, DBGetActiviteit
 {
 
     private static long activityCounter = 0;
@@ -27,26 +27,49 @@ public class Activiteit implements ActiviteitI
     private long id;
     private String description = null;
 
+    public Activiteit(long id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis)
+    {
+        this.id = id;
+        Activiteit.activityCounter = id + 1;
+        this.kalender = kalender;
+        this.title = title;
+        this.startTimeMillis = startTimeMillis;
+        this.endTimeMillis = endTimeMillis;
+        this.running = endTimeMillis < 0;
+        this.description = "";
+    }
+
+    public Activiteit(long id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
+    {
+        this.id = id;
+        Activiteit.activityCounter = id + 1;
+        this.kalender = kalender;
+        this.title = title;
+        this.startTimeMillis = startTimeMillis;
+        this.endTimeMillis = endTimeMillis;
+        this.running = endTimeMillis < 0;
+        this.description = description;
+    }
+
     public Activiteit()
     {
         this.startTimeMillis = System.currentTimeMillis();
         endTimeMillis = -1;
         Activiteit.activityCounter++;
-        this.title = "Leren" + Activiteit.activityCounter;
+        this.title = "Activiteit" + Activiteit.activityCounter;
         this.id = activityCounter;
         this.running = true;
+        this.description = "";
     }
 
     @Override
     public boolean stopRunning()
     {
-        if (running)
-        {
+        if (running) {
             endTimeMillis = System.currentTimeMillis();
             running = false;
             return true;
-        } else
-        {
+        } else {
             return false;
         }
     }
@@ -54,13 +77,11 @@ public class Activiteit implements ActiviteitI
     @Override
     public boolean resumeRunning()
     {
-        if (!running)
-        {
+        if (!running) {
             endTimeMillis = -1;
             running = true;
             return true;
-        } else
-        {
+        } else {
             return false;
         }
     }
@@ -68,16 +89,13 @@ public class Activiteit implements ActiviteitI
     @Override
     public Evenement getEvenement()
     {
-        if (!running && kalender != null)
-        {
+        if (!running && kalender != null) {
             Evenement e = new Evenement(kalender.getId(), title, startTimeMillis, endTimeMillis);
-            if (description != null)
-            {
+            if (description != null) {
                 e.setDescription(description);
             }
             return e;
-        } else
-        {
+        } else {
             return null;
         }
     }
@@ -113,8 +131,7 @@ public class Activiteit implements ActiviteitI
     @Override
     public String getDuration()
     {
-        if (endTimeMillis < 0)
-        {
+        if (endTimeMillis < 0) {
             return "running";
         }
         long temp = (endTimeMillis - startTimeMillis) / 1000;
@@ -129,20 +146,15 @@ public class Activiteit implements ActiviteitI
         int week = (int) temp;
 
         String s = "0 s";
-        if (week > 0)
-        {
+        if (week > 0) {
             s = week + " w";
-        } else if (day > 0)
-        {
+        } else if (day > 0) {
             s = day + " d";
-        } else if (hour > 0)
-        {
+        } else if (hour > 0) {
             s = hour + " h";
-        } else if (min > 0)
-        {
+        } else if (min > 0) {
             s = min + " m";
-        } else if (sec > 0)
-        {
+        } else if (sec > 0) {
             s = sec + " s";
         }
         return s;
@@ -151,8 +163,7 @@ public class Activiteit implements ActiviteitI
     @Override
     public String getKalenderName()
     {
-        if (kalender == null)
-        {
+        if (kalender == null) {
             return null;
         }
         return kalender.getName();
@@ -169,11 +180,10 @@ public class Activiteit implements ActiviteitI
     {
         return timeToString(endTimeMillis);
     }
-    
+
     private String timeToString(long millis)
     {
-        if(millis<0)
-        {
+        if (millis < 0) {
             return null;
         }
         Calendar c = Calendar.getInstance();
@@ -181,8 +191,7 @@ public class Activiteit implements ActiviteitI
         int hours = c.get(Calendar.HOUR_OF_DAY);
         int minutes = c.get(Calendar.MINUTE);
         String mins = String.valueOf(minutes);
-        if (minutes < 10)
-        {
+        if (minutes < 10) {
             mins = "0" + mins;
         }
         return String.valueOf(hours) + ":" + mins;
@@ -208,6 +217,16 @@ public class Activiteit implements ActiviteitI
 
     public String getDescription()
     {
-        return description;
+        return description != null ? description : "";
+    }
+
+    public long getBeginMillis()
+    {
+        return startTimeMillis;
+    }
+
+    public long getEndMillis()
+    {
+        return endTimeMillis;
     }
 }

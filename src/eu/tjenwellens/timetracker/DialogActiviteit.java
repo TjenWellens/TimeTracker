@@ -27,13 +27,13 @@ public class DialogActiviteit extends Dialog
     private EditText txtName, txtCal;
     private Button btnBegin, btnEnd, btnCancel, btnOK;
     private ActiviteitI activiteitI;
-    private GetKalenders getKalenders;
+    private Context context;
 
-    public DialogActiviteit(Context context, ActiviteitI activiteitI, GetKalenders getKalenders)
+    public DialogActiviteit(Context context, ActiviteitI activiteitI)
     {
         super(context);
+        this.context = context;
         this.activiteitI = activiteitI;
-        this.getKalenders = getKalenders;
         initGUI(context);
     }
 
@@ -120,7 +120,7 @@ public class DialogActiviteit extends Dialog
     {
         String title = txtName.getText().toString();
         String kName = txtCal.getText().toString();
-        Kalender k = getKalenders.getKalendarByName(kName);
+        Kalender k = Kalender.getKalenderByName(context, kName);
         if (title != null)
         {
             activiteitI.setActiviteitTitle(title);

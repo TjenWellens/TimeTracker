@@ -5,6 +5,7 @@
 package eu.tjenwellens.timetracker;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.*;
 import eu.tjenwellens.timetracker.calendar.Evenement;
@@ -27,7 +28,15 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler)
     {
         super(context);
-        activiteit = new Activiteit();
+        this.activiteit = new Activiteit();
+        this.activiteitHandler = activiteitHandler;
+        initGUI(context);
+    }
+
+    public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler, Activiteit activiteit)
+    {
+        super(context);
+        this.activiteit = activiteit;
         this.activiteitHandler = activiteitHandler;
         initGUI(context);
     }
@@ -35,7 +44,10 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     private void initGUI(Context context)
     {
         setOrientation(LinearLayout.HORIZONTAL);
-        setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        lp.setMargins(10, 5, 10, 5);
+        setLayoutParams(lp);
+        setBackgroundColor(Color.LTGRAY);
         {
             radioButton = new RadioButton(context);
             radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
@@ -43,8 +55,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 
                 public void onCheckedChanged(CompoundButton cb, boolean isChecked)
                 {
-                    if (isChecked && activiteitHandler != null)
-                    {
+                    if (isChecked && activiteitHandler != null) {
                         activiteitHandler.radioButtonChecked(ActiviteitPanel.this);
                     }
                 }
@@ -57,8 +68,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 
                 public void onClick(View arg0)
                 {
-                    if (activiteitHandler != null)
-                    {
+                    if (activiteitHandler != null) {
                         activiteitHandler.activiteitEdit(ActiviteitPanel.this);
                     }
                 }
@@ -83,15 +93,15 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
             {
                 saveButton.setText(R.string.save);
                 stopButton.setText(R.string.stop);
-                saveButton.setEnabled(false);
-                stopButton.setEnabled(true);
+//                saveButton.setEnabled(!activiteit.isRunning());
+//                stopButton.setEnabled(activiteit.isRunning());
+                updateButtons();
                 saveButton.setOnClickListener(new OnClickListener()
                 {
 
                     public void onClick(View arg0)
                     {
-                        if (activiteitHandler != null && !isRunning())
-                        {
+                        if (activiteitHandler != null && !isRunning()) {
                             activiteitHandler.activiteitSave(ActiviteitPanel.this);
                         }
                     }
@@ -101,8 +111,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 
                     public void onClick(View arg0)
                     {
-                        if (stopRunning() && activiteitHandler != null)
-                        {
+                        if (stopRunning() && activiteitHandler != null) {
                             activiteitHandler.activiteitStop(ActiviteitPanel.this);
                         }
                     }
@@ -112,18 +121,18 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
             this.addView(radioButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
             // bepaalt hoogte: 
             this.addView(pnlText, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 5f));
-            this.addView(saveButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1f));
-            this.addView(stopButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1f));
+            this.addView(saveButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+            this.addView(stopButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         }
     }
 
     public boolean stopRunning()
     {
-        if (activiteit.stopRunning())
-        {
+        if (activiteit.stopRunning()) {
             // enable save, disable stop
-            saveButton.setEnabled(true);
-            stopButton.setEnabled(false);
+//            saveButton.setEnabled(true);
+//            stopButton.setEnabled(false);
+            updateButtons();
             updateTVDuration();
             return true;
         }
@@ -132,15 +141,21 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 
     public boolean resumeRunning()
     {
-        if (activiteit.resumeRunning())
-        {
+        if (activiteit.resumeRunning()) {
             // disable save, enable stop
-            saveButton.setEnabled(false);
-            stopButton.setEnabled(true);
+//            saveButton.setEnabled(false);
+//            stopButton.setEnabled(true);
+            updateButtons();
             updateTVDuration();
             return true;
         }
         return false;
+    }
+
+    private void updateButtons()
+    {
+        saveButton.setEnabled(!activiteit.isRunning());
+        stopButton.setEnabled(activiteit.isRunning());
     }
 
     public Evenement getEvenement()
@@ -236,5 +251,20 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     public void uncheckRadioButton()
     {
         radioButton.setChecked(false);
+    }
+
+    public Activiteit getActiviteit()
+    {
+        return activiteit;
+    }
+
+    public void setDescription(String description)
+    {
+        activiteit.setDescription(description);
+    }
+
+    public String getDescription()
+    {
+        return activiteit.getDescription();
     }
 }

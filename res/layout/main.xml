@@ -16,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="btnDetails"
             android:text="@string/details" />
 
         <Button
@@ -23,6 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="btnMacro1"
             android:text="@string/macro" />
 
         <Button
@@ -30,6 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="btnMacro2"
             android:text="@string/macro" />
     </LinearLayout>
 
@@ -62,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="btnCancel"
-            android:text="@string/cancel" />
+            android:text="@string/delete" />
 
         <Button
             android:id="@+id/btnResume"

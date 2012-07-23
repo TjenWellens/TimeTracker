@@ -1,0 +1,212 @@
+package eu.tjenwellens.timetracker.database;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import eu.tjenwellens.timetracker.Activiteit;
+import eu.tjenwellens.timetracker.calendar.Kalender;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatabaseHandler extends SQLiteOpenHelper
+{
+    // singleton
+
+    private static DatabaseHandler dbh;
+    // All Static variables
+    // Database Version
+    private static final int DATABASE_VERSION = 1;
+    // Database Name
+    private static final String DATABASE_NAME = "timetracker";
+    // Contacts table name
+    private static final String TABLE_ACTIVITEITEN = "activiteiten";
+    // Contacts Table Columns names
+    private static final String KEY_ID = "id";
+    private static final String KEY_KAL_NAME = "kalender_name";
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_START_MILLIS = "start_millis";
+    private static final String KEY_STOP_MILLIS = "stop_millis";
+    private static final String KEY_DETAILS = "details";
+    // Create table
+    private static final String CREATE_ACTIVITEITEN_TABLE = "CREATE TABLE " + TABLE_ACTIVITEITEN + "("
+            + KEY_ID + " INTEGER PRIMARY KEY,"
+            + KEY_KAL_NAME + " TEXT,"
+            + KEY_TITLE + " TEXT,"
+            + KEY_START_MILLIS + " INTEGER,"
+            + KEY_STOP_MILLIS + " INTEGER,"
+            // mind the , before the )
+            + KEY_DETAILS + " TEXT"
+            + ")";
+    private Context context;
+
+    private DatabaseHandler(Context context)
+    {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
+    }
+
+    public static DatabaseHandler getInstance(Context context)
+    {
+        if (dbh == null || dbh.context != context) {
+            dbh = new DatabaseHandler(context);
+        }
+        return dbh;
+    }
+
+    // Creating Tables
+    @Override
+    public void onCreate(SQLiteDatabase db)
+    {
+        db.execSQL(CREATE_ACTIVITEITEN_TABLE);
+    }
+
+    // Upgrading database
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVITEITEN);
+
+        // Create tables again
+        onCreate(db);
+    }
+
+    /**
+     * All CRUD(Create, Read, Update, Delete) Operations
+     */
+    // Adding new contact
+    public void addActiviteit(Activiteit activiteit)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, activiteit.getActiviteitId());        // id
+        values.put(KEY_KAL_NAME, activiteit.getKalenderName()); // kalender
+        values.put(KEY_TITLE, activiteit.getActiviteitTitle());        // title
+        values.put(KEY_START_MILLIS, activiteit.getBeginMillis()); // begin
+        values.put(KEY_STOP_MILLIS, activiteit.getEndMillis()); // end
+        values.put(KEY_DETAILS, activiteit.getDescription()); // description
+
+        // Inserting Row
+        db.insert(TABLE_ACTIVITEITEN, null, values);
+        db.close(); // Closing database connection
+    }
+
+    // Getting single contact
+    public Activiteit getActiviteit(int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String table = TABLE_ACTIVITEITEN;
+        String[] columns = new String[]{KEY_ID, KEY_KAL_NAME, KEY_TITLE, KEY_START_MILLIS, KEY_STOP_MILLIS, KEY_DETAILS};
+        String selection = KEY_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(id)};
+        String groupBy = null;
+        String having = null;
+        String orderBy = null;
+        String limit = null;
+        Cursor cursor = db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+
+        long db_id = Long.parseLong(cursor.getString(0));
+        String db_kalendar_name = cursor.getString(1);
+        Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
+        String db_title = cursor.getString(2);
+        long db_start = Long.parseLong(cursor.getString(3));
+        long db_stop = Long.parseLong(cursor.getString(4));
+        String db_description = cursor.getString(5);
+
+        Activiteit activiteit = new Activiteit(db_id, kalender, db_title, db_start, db_stop, db_description);
+        // return contact
+        return activiteit;
+    }
+
+    public void addAllActiviteiten(List<Activiteit> activiteiten)
+    {
+        for (Activiteit activiteit : activiteiten) {
+            addActiviteit(activiteit);
+        }
+    }
+
+    // Getting All Contacts
+    public List<Activiteit> getAllActiviteiten()
+    {
+        List<Activiteit> contactList = new ArrayList<Activiteit>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_ACTIVITEITEN;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                long db_id = Long.parseLong(cursor.getString(0));
+                String db_kalendar_name = cursor.getString(1);
+                Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
+                String db_title = cursor.getString(2);
+                long db_start = Long.parseLong(cursor.getString(3));
+                long db_stop = Long.parseLong(cursor.getString(4));
+                String db_description = cursor.getString(5);
+
+                Activiteit activiteit = new Activiteit(db_id, kalender, db_title, db_start, db_stop, db_description);
+
+                // Adding contact to list
+                contactList.add(activiteit);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return contactList;
+    }
+
+    // Updating single contact
+    public int updateActiviteit(Activiteit activiteit)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, activiteit.getActiviteitId());        // id
+        values.put(KEY_KAL_NAME, activiteit.getKalenderName()); // kalender
+        values.put(KEY_TITLE, activiteit.getActiviteitTitle());        // title
+        values.put(KEY_START_MILLIS, activiteit.getBeginMillis()); // begin
+        values.put(KEY_STOP_MILLIS, activiteit.getEndMillis()); // end
+        values.put(KEY_DETAILS, activiteit.getDescription()); // description
+
+        // updating row
+        return db.update(TABLE_ACTIVITEITEN, values, KEY_ID + " = ?",
+                new String[]{String.valueOf(activiteit.getActiviteitId())});
+    }
+
+    // Deleting single contact
+    public void deleteActiviteit(Activiteit activiteit)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ACTIVITEITEN, KEY_ID + " = ?",
+                new String[]{String.valueOf(activiteit.getActiviteitId())});
+        db.close();
+    }
+
+    // Getting contacts Count
+    public int getActiviteitenCount()
+    {
+        String countQuery = "SELECT  * FROM " + TABLE_ACTIVITEITEN;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        cursor.close();
+
+        // return count
+        return cursor.getCount();
+    }
+
+    public void clearActiviteiten()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ACTIVITEITEN, null, null);
+        db.close();
+    }
+}

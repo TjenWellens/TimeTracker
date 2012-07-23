@@ -22,6 +22,7 @@
     <string name="macro">Macro</string>
     <string name="running">running</string>
     <string name="ok">OK</string>
+    <string name="delete">Delete</string>
     <string name="startTime">Begin</string>
     <string name="stopTime">End</string>
     <string name="endTimeExample">15:45</string>

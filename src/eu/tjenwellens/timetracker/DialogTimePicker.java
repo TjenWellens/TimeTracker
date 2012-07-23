@@ -19,9 +19,4 @@ public class DialogTimePicker extends Dialog
         super(context);
     }
     
-    public long getTime()
-    {
-        // TODO: 
-        return 0;
-    }
 }

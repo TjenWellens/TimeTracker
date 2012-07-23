@@ -15,7 +15,7 @@ public interface ActiviteitHandler
 
     void activiteitEdit(ActiviteitPanel a);
 
-    void activiteitStop(ActiviteitPanel a);
-    
     void radioButtonChecked(ActiviteitPanel a);
+
+    void activiteitStop(ActiviteitPanel a);
 }

@@ -28,6 +28,8 @@ public interface ActiviteitI
 
     void setActiviteitTitle(String title);
 
+    void setDescription(String description);
+
     String getDuration();
 
     String getKalenderName();
@@ -41,4 +43,6 @@ public interface ActiviteitI
     long getActiviteitId();
 
     boolean isRunning();
+
+    String getDescription();
 }
