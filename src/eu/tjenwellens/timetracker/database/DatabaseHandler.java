@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import eu.tjenwellens.timetracker.Activiteit;
+import eu.tjenwellens.timetracker.Macro;
+import eu.tjenwellens.timetracker.MacroI;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     private static DatabaseHandler dbh;
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     // Database Name
     private static final String DATABASE_NAME = "timetracker";
     // Contacts table name
@@ -40,6 +42,14 @@ public class DatabaseHandler extends SQLiteOpenHelper
             + KEY_DETAILS + " TEXT"
             + ")";
     private Context context;
+    // Macros table name
+    private static final String TABLE_MACROS = "macros";
+    // Create table
+    private static final String CREATE_MACROS_TABLE = "CREATE TABLE " + TABLE_MACROS + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_KAL_NAME + " TEXT,"
+            + KEY_TITLE + " TEXT"
+            + ")";
 
     private DatabaseHandler(Context context)
     {
@@ -60,6 +70,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase db)
     {
         db.execSQL(CREATE_ACTIVITEITEN_TABLE);
+        db.execSQL(CREATE_MACROS_TABLE);
     }
 
     // Upgrading database
@@ -68,6 +79,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVITEITEN);
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MACROS);
 
         // Create tables again
         onCreate(db);
@@ -208,5 +221,60 @@ public class DatabaseHandler extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ACTIVITEITEN, null, null);
         db.close();
+    }
+
+    public void addMacro(MacroI macro)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_KAL_NAME, macro.getKalenderName()); // kalender
+        values.put(KEY_TITLE, macro.getActiviteitTitle());        // title
+
+        // Inserting Row
+        db.insert(TABLE_MACROS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    public void addAllMacros(List<MacroI> macros)
+    {
+        for (MacroI macro : macros) {
+            addMacro(macro);
+        }
+    }
+
+    public void clearMacros()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_MACROS, null, null);
+        db.close();
+    }
+
+    public List<MacroI> getAllMacros()
+    {
+        List<MacroI> contactList = new ArrayList<MacroI>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_MACROS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+//                long db_id = Long.parseLong(cursor.getString(0));
+                String db_kalendar_name = cursor.getString(1);
+                Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
+                String db_title = cursor.getString(2);
+
+                MacroI macro = new Macro(db_title, kalender);
+
+                // Adding contact to list
+                contactList.add(macro);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return contactList;
     }
 }

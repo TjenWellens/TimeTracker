@@ -7,10 +7,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
+import android.util.Log;
+import android.view.*;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -23,26 +21,44 @@ import eu.tjenwellens.timetracker.gestures.SimpleGestureListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeTrackerActivity extends Activity implements GetContent, ActiviteitHandler, SimpleGestureListener
+public class TimeTrackerActivity extends Activity implements GetContent, ActiviteitHandler, SimpleGestureListener, DetailHandler, MacroHandler
 {
 
     public static final String CONTENT_CALENDARS = "content://com.android.calendar/calendars";
     public static final String CONTENT_EVENTS = "content://com.android.calendar/events";
     public static final String KEY_PREFERENCE_DEFAULT_CALENDAR = "default_calendar";
-    public static final String APP_DEFAULT_CALENDAR = "default_calendar";
-    //
-    private LinearLayout scrollPanel;
-    private ActiviteitPanel currentSelectedAP = null;
+    public static final String APP_DEFAULT_CALENDAR = "test";
+    // main screen selection
+    private ViewGroup activiteitViewContainer;
+    private ActiviteitPanel currentActiviteit = null;
+    // detail screen selection
+    private ArrayList<DetailPanel> currentDetails = new ArrayList<DetailPanel>();
+    // macro
+    private MacroPanel macroPanel;
     // gestures
     private SimpleGestureFilter detector;
     // flippering
     private ViewFlipper flipper;
     //
-    private List<ActiviteitPanel> activiteiten = new ArrayList<ActiviteitPanel>();
+    private ArrayList<ActiviteitPanel> activiteiten = new ArrayList<ActiviteitPanel>();
     //
     private Kalender pref_kal = null;
     //
     private SharedPreferences preferences;
+
+    private void spinnerTest()
+    {
+        Spinner s = new Spinner(this);
+        s.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+            {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+//        ArrayAdapter<String>aa=new ArrayAdapter<String>(this, 0, null);
+        
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -51,11 +67,14 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         // GUI
         initFlipper();
         initMainGUI();
+        initDetailGUI();
+        initMacroGUI();
         // Initialize preferences
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // load prev state (if any)
         loadActiviteiten();
+        loadMacros();
         // init gestures
         detector = new SimpleGestureFilter(this, this);
     }
@@ -73,6 +92,7 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     {
         super.onDestroy();
         saveActiviteiten();
+        saveMacros();
     }
 
     private void loadActiviteiten()
@@ -87,12 +107,32 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     private void saveActiviteiten()
     {
-        // TODO: save activiteiten
+        // save activiteiten
         List<ActiviteitPanel> an = new ArrayList<ActiviteitPanel>(activiteiten);
         DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         for (ActiviteitPanel ap : an) {
             dbh.addActiviteit(ap.getActiviteit());
             removeActiviteit(ap);
+        }
+    }
+
+    private void loadMacros()
+    {
+        // load macros
+        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+        Log.d("\n\n\n\n\n\n\n\n\n\n\n", "laad macros");
+        macroPanel.addAllButtons(dbh.getAllMacros());
+        Log.d("gelukt", "\n\n\n\n\n\n\n\n\n\n\n");
+        dbh.clearMacros();
+    }
+
+    private void saveMacros()
+    {
+        // save macros
+        List<MacroI> macros = macroPanel.getMacros();
+        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+        for (MacroI macro : macros) {
+            dbh.addMacro(macro);
         }
     }
 
@@ -163,11 +203,11 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         // remove activiteit
         if (activiteiten.remove(a)) {
             // stop -> GUI
-            scrollPanel.removeView(a);
+            activiteitViewContainer.removeView(a);
         }
 
         // reset selection
-        if (currentSelectedAP == a) {
+        if (currentActiviteit == a) {
             setORresetSelectionMade(null);
         }
     }
@@ -183,19 +223,19 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     public void btnResume(View arg0)
     {// resume selected activiteit
         // find selected activiteit
-        ActiviteitI a = currentSelectedAP;
+        ActiviteitI a = currentActiviteit;
 
         if (a != null) {
             a.resumeRunning();
             // update resume button
-            setORresetSelectionMade(currentSelectedAP);
+            setORresetSelectionMade(currentActiviteit);
         }
     }
 
     public void btnCancel(View arg0)
     {// cancel selected activiteit
         // find selected activiteit
-        ActiviteitPanel a = currentSelectedAP;
+        ActiviteitPanel a = currentActiviteit;
         if (a != null) {
             removeActiviteit(a);
             // resetSelection available buttons
@@ -210,23 +250,94 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         flipper.showPrevious();
     }
 
-    public void btnDetailOK(View arg0)
+    public void btnDetailSave(View arg0)
     {
-        ActiviteitPanel a = currentSelectedAP;
-        if (a != null) {
-            EditText txtDetail = (EditText) findViewById(R.id.txtDetail);
-            a.setDescription(txtDetail.getText().toString());
+        if (currentActiviteit != null) {
+            int size = currentDetails.size();
+            String[] description = new String[size];
+            for (int i = 0; i < size; i++) {
+                description[i] = currentDetails.get(i).getDetailText();
+            }
+            currentActiviteit.setDescription(description);
         }
-        Toast.makeText(this, "Details saved ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Details saved", Toast.LENGTH_SHORT).show();
+        nextScreen();
+    }
+
+    public void deleteDetail(DetailPanel dp)
+    {
+        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.detailsContainer);
+        if (currentDetails.remove(dp)) {
+            detailViewContainer.removeView(dp);
+        }
+        Toast.makeText(this, "Detail deleted", Toast.LENGTH_SHORT).show();
     }
 
     public void btnDetailCancel(View arg0)
     {
-        ActiviteitPanel a = currentSelectedAP;
-        if (a != null) {
-            EditText txtDetail = (EditText) findViewById(R.id.txtDetail);
-            txtDetail.setText(a.getDescription());
-        }
+        EditText et = (EditText) findViewById(R.id.txtDetail);
+        et.setText("");
+    }
+
+    public void btnDetailAdd(View arg0)
+    {
+        EditText et = (EditText) findViewById(R.id.txtDetail);
+        String text = et.getText().toString();
+        DetailPanel dp = new DetailPanel(this, this, text);
+        addDetail(dp);
+        et.setText("");
+    }
+
+    public void btnDetailTime(View arg0)
+    {
+        EditText et = (EditText) findViewById(R.id.txtDetail);
+        et.setText(Time.timeToString(System.currentTimeMillis()) + " " + et.getText().toString());
+    }
+
+    public void btnMacroAdd(View arg0)
+    {
+        final EditText txtTitle = (EditText) findViewById(R.id.txtMacroName);
+        final EditText txtKal = (EditText) findViewById(R.id.txtMacroCalendar);
+        String kalenderString = txtKal.getText().toString();
+        String title = txtTitle.getText().toString();
+        Kalender kalender = Kalender.getKalenderByName(this, kalenderString);
+        macroPanel.add(title, kalender);
+
+        txtTitle.setText("");
+        txtKal.setText("");
+        Log.d("----------------added new macro: ", title + " - " + kalender);
+    }
+
+    public void btnMacroReset(View arg0)
+    {
+        macroPanel.reset();
+    }
+
+    public void btnMacroClear(View arg0)
+    {
+        final EditText txtTitle = (EditText) findViewById(R.id.txtMacroName);
+        final EditText txtKal = (EditText) findViewById(R.id.txtMacroCalendar);
+        txtTitle.setText("");
+        txtKal.setText("");
+    }
+
+    public void btnMacroBack(View arg0)
+    {
+        previousScreen();
+    }
+
+    private void deleteDetails()
+    {
+        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.detailsContainer);
+        detailViewContainer.removeAllViews();
+        currentDetails.clear();
+    }
+
+    private void addDetail(DetailPanel dp)
+    {
+        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.detailsContainer);
+        detailViewContainer.addView(dp);
+        currentDetails.add(dp);
     }
 
     private void showPrefs(String default_calendar)
@@ -240,37 +351,38 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     public void btnMacro1(View arg0)
     {
         // start new activiteit
-        ActiviteitPanel a = new ActiviteitPanel(this, this);
-        a.setActiviteitTitle("pauze");
-        Kalender ritme_indeling = Kalender.getKalenderByName(this, "ritme/indeling");
-        if (ritme_indeling != null) {
-            a.setKalender(ritme_indeling);
-        } else {
-            a.setKalender(pref_kal);
-        }
-        addActiviteit(a);
+//        ActiviteitPanel a = new ActiviteitPanel(this, this);
+//        a.setActiviteitTitle("pauze");
+//        Kalender ritme_indeling = Kalender.getKalenderByName(this, "ritme/indeling");
+//        if (ritme_indeling != null) {
+//            a.setKalender(ritme_indeling);
+//        } else {
+//            a.setKalender(pref_kal);
+//        }
+//        addActiviteit(a);
+        // go to macro screen
+        nextScreen();
     }
 
-    public void btnMacro2(View arg0)
-    {
-        // start new activiteit
-        ActiviteitPanel a = new ActiviteitPanel(this, this);
-        a.setActiviteitTitle("leren");
-        Kalender leren = Kalender.getKalenderByName(this, "school/leren");
-        if (leren != null) {
-            a.setKalender(leren);
-        } else {
-            a.setKalender(pref_kal);
-        }
-        addActiviteit(a);
-    }
-
+//    public void btnMacro2(View arg0)
+//    {
+//        // start new activiteit
+//        ActiviteitPanel a = new ActiviteitPanel(this, this);
+//        a.setActiviteitTitle("leren");
+//        Kalender leren = Kalender.getKalenderByName(this, "school/leren");
+//        if (leren != null) {
+//            a.setKalender(leren);
+//        } else {
+//            a.setKalender(pref_kal);
+//        }
+//        addActiviteit(a);
+//    }
     private void addActiviteit(ActiviteitPanel a)
     {
         // add to list
         activiteiten.add(a);
         // add to gui
-        scrollPanel.addView(a);
+        activiteitViewContainer.addView(a);
         // check the new radiobutton
         radioButtonChecked(a);
 
@@ -285,7 +397,7 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     public void activiteitStop(ActiviteitPanel a)
     {
-        if (a == currentSelectedAP) {
+        if (a == currentActiviteit) {
             // update resume button
             setORresetSelectionMade(a);
         }
@@ -305,20 +417,24 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     private void initMainGUI()
     {
 //        setContentView(R.layout.main);
-        scrollPanel = ((LinearLayout) findViewById(R.id.activiteitenLinearLayout));
+        activiteitViewContainer = ((ViewGroup) findViewById(R.id.activiteitenLinearLayout));
         initGUIButtons();
     }
 
     private void initGUIButtons()
     {
+        Button detail = (Button) findViewById(R.id.btnDetails);
+        detail.setText("<-- Details");
         Button macro1 = (Button) findViewById(R.id.btnMacro1);
-        Button macro2 = (Button) findViewById(R.id.btnMacro2);
+//        Button macro2 = (Button) findViewById(R.id.btnMacro2);
+        Button btnDetailCancel = (Button) findViewById(R.id.btnDetailCancel);
         macro1.setEnabled(true);
-        macro1.setText("Pauze");
-        macro2.setEnabled(true);
-        macro2.setText("Leren");
+        macro1.setText("Macro's -->");
+//        macro2.setEnabled(true);
+//        macro2.setText("Leren");
+        btnDetailCancel.setEnabled(true);
 
-        setORresetSelectionMade(currentSelectedAP);
+        setORresetSelectionMade(currentActiviteit);
     }
 
     private void setORresetSelectionMade(ActiviteitPanel a)
@@ -326,27 +442,40 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         Button detail = (Button) findViewById(R.id.btnDetails);
         Button cancel = (Button) findViewById(R.id.btnCancel);
         Button resume = (Button) findViewById(R.id.btnResume);
-        Button detailOK = (Button) findViewById(R.id.btnDetailOk);
-        Button detailCancel = (Button) findViewById(R.id.btnDetailCancel);
-        EditText txtDetail = (EditText) findViewById(R.id.txtDetail);
+        Button detailAdd = (Button) findViewById(R.id.btnDetailAdd);
+        Button detailSave = (Button) findViewById(R.id.btnDetailSave);
         if (a == null) {
             detail.setEnabled(false);
             cancel.setEnabled(false);
             resume.setEnabled(false);
-            detailOK.setEnabled(false);
-            detailCancel.setEnabled(false);
-            txtDetail.setText("");
-
+            detailAdd.setEnabled(false);
+            detailSave.setEnabled(false);
+            deleteDetails();
         } else {
             detail.setEnabled(true);
             cancel.setEnabled(true);
-            detailOK.setEnabled(true);
-            detailCancel.setEnabled(true);
-//            Log.d("+++++++++\n++++++++++\n" + a.getActiviteitTitle(), "running: " + a.isRunning());
             resume.setEnabled(!a.isRunning());
-            txtDetail.setText(a.getDescription());
+            detailAdd.setEnabled(true);
+            detailSave.setEnabled(true);
+            deleteDetails();
+            loadDetails(a);
         }
-        currentSelectedAP = a;
+        currentActiviteit = a;
+    }
+
+    private void loadDetails(ActiviteitPanel a)
+    {
+        if (a == null) {
+            return;
+        }
+        String[] currentDescriptions = a.getDescriptionEntries();
+        if (currentDescriptions == null) {
+            return;
+        }
+        for (String string : currentDescriptions) {
+            DetailPanel dp = new DetailPanel(this, this, string);
+            addDetail(dp);
+        }
     }
 
     @Override
@@ -363,14 +492,10 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         switch (direction) {
 
             case SimpleGestureFilter.SWIPE_RIGHT:
-                flipper.setInAnimation(inFromLeftAnimation());
-                flipper.setOutAnimation(outToRightAnimation());
-                flipper.showPrevious();
+                previousScreen();
                 break;
             case SimpleGestureFilter.SWIPE_LEFT:
-                flipper.setInAnimation(inFromRightAnimation());
-                flipper.setOutAnimation(outToLeftAnimation());
-                flipper.showNext();
+                nextScreen();
                 break;
             case SimpleGestureFilter.SWIPE_DOWN:
                 // do nothing
@@ -380,6 +505,20 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
                 break;
 
         }
+    }
+
+    private void previousScreen()
+    {
+        flipper.setInAnimation(inFromLeftAnimation());
+        flipper.setOutAnimation(outToRightAnimation());
+        flipper.showPrevious();
+    }
+
+    private void nextScreen()
+    {
+        flipper.setInAnimation(inFromRightAnimation());
+        flipper.setOutAnimation(outToLeftAnimation());
+        flipper.showNext();
     }
 
     @Override
@@ -441,5 +580,28 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         outtoRight.setDuration(500);
         outtoRight.setInterpolator(new AccelerateInterpolator());
         return outtoRight;
+    }
+
+    private void initDetailGUI()
+    {
+        // nothing to do yet
+    }
+
+    public void startActiviteit(MacroI macro)
+    {
+        ActiviteitPanel a = new ActiviteitPanel(this, this, macro);
+        addActiviteit(a);
+        previousScreen();
+    }
+
+    private void initMacroGUI()
+    {
+        final LinearLayout macroContainer = (LinearLayout) findViewById(R.id.macroContainer);
+        if (macroContainer != null) {
+            macroPanel = new MacroPanel(this, this);
+            macroContainer.addView(macroPanel);
+        } else {
+            Toast.makeText(this, "Macro's not initialized", Toast.LENGTH_LONG).show();
+        }
     }
 }

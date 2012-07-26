@@ -27,13 +27,13 @@
             android:onClick="btnMacro1"
             android:text="@string/macro" />
 
-        <Button
+<!--        <Button
             android:id="@+id/btnMacro2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="btnMacro2"
-            android:text="@string/macro" />
+            android:text="@string/macro" />-->
     </LinearLayout>
 
     <ScrollView

@@ -6,8 +6,6 @@ package eu.tjenwellens.timetracker;
 
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  *
@@ -16,6 +14,7 @@ import java.util.Date;
 public class Activiteit implements ActiviteitI, DBGetActiviteit
 {
 
+    private static final String SPLITTER = "\n";
     private static long activityCounter = 0;
     //
     private boolean running;
@@ -25,7 +24,7 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
     private long endTimeMillis;
     private String title;
     private long id;
-    private String description = null;
+    private String[] description = null;
 
     public Activiteit(long id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis)
     {
@@ -36,7 +35,7 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
         this.startTimeMillis = startTimeMillis;
         this.endTimeMillis = endTimeMillis;
         this.running = endTimeMillis < 0;
-        this.description = "";
+        this.description = null;
     }
 
     public Activiteit(long id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
@@ -48,18 +47,30 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
         this.startTimeMillis = startTimeMillis;
         this.endTimeMillis = endTimeMillis;
         this.running = endTimeMillis < 0;
-        this.description = description;
+        this.description = description.split(SPLITTER);
     }
 
     public Activiteit()
     {
         this.startTimeMillis = System.currentTimeMillis();
-        endTimeMillis = -1;
+        this.endTimeMillis = -1;
         Activiteit.activityCounter++;
         this.title = "Activiteit" + Activiteit.activityCounter;
         this.id = activityCounter;
         this.running = true;
-        this.description = "";
+        this.description = null;
+    }
+
+    public Activiteit(MacroI macro)
+    {
+        this.startTimeMillis = System.currentTimeMillis();
+        this.title = macro.getActiviteitTitle();
+        this.kalender = macro.getKalender();
+        this.endTimeMillis = -1;
+        Activiteit.activityCounter++;
+        this.id = activityCounter;
+        this.running = true;
+        this.description = null;
     }
 
     @Override
@@ -86,13 +97,25 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
         }
     }
 
+    private String mergeDetails(String splitter)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < description.length; i++) {
+            sb.append(description[i]);
+            if (i < description.length - 1) {
+                sb.append(splitter);
+            }
+        }
+        return sb.toString();
+    }
+
     @Override
     public Evenement getEvenement()
     {
         if (!running && kalender != null) {
             Evenement e = new Evenement(kalender.getId(), title, startTimeMillis, endTimeMillis);
             if (description != null) {
-                e.setDescription(description);
+                e.setDescription(mergeDetails(SPLITTER));
             }
             return e;
         } else {
@@ -123,7 +146,7 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
         this.title = title;
     }
 
-    public void setDescription(String description)
+    public void setDescription(String[] description)
     {
         this.description = description;
     }
@@ -172,29 +195,13 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
     @Override
     public String getStartTime()
     {
-        return timeToString(startTimeMillis);
+        return Time.timeToString(startTimeMillis);
     }
 
     @Override
     public String getStopTime()
     {
-        return timeToString(endTimeMillis);
-    }
-
-    private String timeToString(long millis)
-    {
-        if (millis < 0) {
-            return null;
-        }
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date(millis));
-        int hours = c.get(Calendar.HOUR_OF_DAY);
-        int minutes = c.get(Calendar.MINUTE);
-        String mins = String.valueOf(minutes);
-        if (minutes < 10) {
-            mins = "0" + mins;
-        }
-        return String.valueOf(hours) + ":" + mins;
+        return Time.timeToString(endTimeMillis);
     }
 
     @Override
@@ -217,7 +224,12 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
 
     public String getDescription()
     {
-        return description != null ? description : "";
+        return description != null ? mergeDetails(SPLITTER) : "";
+    }
+
+    public String[] getDescriptionEntries()
+    {
+        return description;
     }
 
     public long getBeginMillis()

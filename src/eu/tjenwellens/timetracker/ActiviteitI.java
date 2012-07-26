@@ -28,7 +28,7 @@ public interface ActiviteitI
 
     void setActiviteitTitle(String title);
 
-    void setDescription(String description);
+    void setDescription(String[] description);
 
     String getDuration();
 
@@ -45,4 +45,6 @@ public interface ActiviteitI
     boolean isRunning();
 
     String getDescription();
+
+    String[] getDescriptionEntries();
 }

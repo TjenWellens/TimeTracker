@@ -41,6 +41,14 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         initGUI(context);
     }
 
+    public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler, MacroI macro)
+    {
+        super(context);
+        this.activiteit = new Activiteit(macro);
+        this.activiteitHandler = activiteitHandler;
+        initGUI(context);
+    }
+
     private void initGUI(Context context)
     {
         setOrientation(LinearLayout.HORIZONTAL);
@@ -258,7 +266,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         return activiteit;
     }
 
-    public void setDescription(String description)
+    public void setDescription(String[] description)
     {
         activiteit.setDescription(description);
     }
@@ -266,5 +274,10 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     public String getDescription()
     {
         return activiteit.getDescription();
+    }
+
+    public String[] getDescriptionEntries()
+    {
+        return activiteit.getDescriptionEntries();
     }
 }

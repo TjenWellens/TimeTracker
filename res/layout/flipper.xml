@@ -9,7 +9,7 @@
         layout="@layout/main" />
     <include
         android:id="@+id/first"
-        layout="@layout/first_view" />
+        layout="@layout/macro" />
 
     <include
         android:id="@+id/details"
