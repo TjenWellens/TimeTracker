@@ -2,20 +2,21 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.main;
 
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.macro.MacroI;
 
 /**
  *
  * @author tjen
  */
-public class Activiteit implements ActiviteitI, DBGetActiviteit
+public class Activiteit implements ActiviteitI
 {
 
     private static final String SPLITTER = "\n";
-    private static long activityCounter = 0;
+    private static int activityCounter = 0;
     //
     private boolean running;
     //
@@ -23,10 +24,10 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
     private long startTimeMillis;
     private long endTimeMillis;
     private String title;
-    private long id;
+    private int id;
     private String[] description = null;
 
-    public Activiteit(long id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis)
+    public Activiteit(int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis)
     {
         this.id = id;
         Activiteit.activityCounter = id + 1;
@@ -38,7 +39,7 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
         this.description = null;
     }
 
-    public Activiteit(long id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
+    public Activiteit(int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
     {
         this.id = id;
         Activiteit.activityCounter = id + 1;
@@ -107,6 +108,23 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
             }
         }
         return sb.toString();
+    }
+
+    public static String mergeDetailEntries(String[] strings)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < strings.length; i++) {
+            sb.append(strings[i]);
+            if (i < strings.length - 1) {
+                sb.append(SPLITTER);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String[] splitDetailToEntries(String strings)
+    {
+        return strings.split(SPLITTER);
     }
 
     @Override
@@ -211,7 +229,7 @@ public class Activiteit implements ActiviteitI, DBGetActiviteit
     }
 
     @Override
-    public long getActiviteitId()
+    public int getActiviteitId()
     {
         return id;
     }

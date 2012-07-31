@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.macro;
 
 import android.content.Context;
 import android.widget.Button;
@@ -54,5 +54,10 @@ public class MacroButton extends Button implements MacroI
     public String getKalenderName()
     {
         return macro.getKalenderName();
+    }
+
+    public int getID()
+    {
+        return macro.getID();
     }
 }

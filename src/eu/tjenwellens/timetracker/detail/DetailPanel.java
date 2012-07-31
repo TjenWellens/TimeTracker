@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.detail;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import eu.tjenwellens.timetracker.R;
 
 /**
  *
@@ -42,9 +43,16 @@ public class DetailPanel extends LinearLayout
         {
             tvDetailEntry = new TextView(context);
             tvDetailEntry.setText(detailText);
+            tvDetailEntry.setOnClickListener(new OnClickListener() {
+
+                public void onClick(View arg0)
+                {
+                    detailHandler.editDetail(DetailPanel.this);
+                }
+            });
             this.addView(tvDetailEntry, new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
             deleteButton = new Button(context);
-            deleteButton.setText("Delete");
+            deleteButton.setText(R.string.delete);
             this.addView(deleteButton, new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             deleteButton.setOnClickListener(new OnClickListener()
             {

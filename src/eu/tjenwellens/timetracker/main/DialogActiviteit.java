@@ -2,17 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.main;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
+import android.widget.*;
+import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 
 /**
@@ -24,15 +22,37 @@ public class DialogActiviteit extends Dialog
 
     private LinearLayout mainpanel, buttonPanel;
     private TextView tvName, tvCal, tvBegin, tvEnd;
-    private EditText txtName, txtCal;
+    private EditText txtName;
     private Button btnBegin, btnEnd, btnCancel, btnOK;
     private ActiviteitI activiteitI;
-    private Context context;
+//    private Context context;
+    private Spinner spnCal;
+    private Kalender selectedKalender;
+    private AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener()
+    {
+
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
+        {
+            Object selected = parent.getItemAtPosition(pos);
+            if (selected instanceof Kalender) {
+                selectedKalender = (Kalender) selected;
+//                Toast.makeText(MacroSettingsActivity.this, "Success spinner to calender: " + selectedKalender, Toast.LENGTH_LONG).show();
+            } else {
+//                context.Toast.makeText(MacroSettingsActivity.this, "Failed to recognize  calender", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        public void onNothingSelected(AdapterView<?> parent)
+        {
+            selectedKalender = null;
+//            Toast.makeText(MacroSettingsActivity.this, "No selection made", Toast.LENGTH_LONG).show();
+        }
+    };
 
     public DialogActiviteit(Context context, ActiviteitI activiteitI)
     {
         super(context);
-        this.context = context;
+//        this.context = context;
         this.activiteitI = activiteitI;
         initGUI(context);
     }
@@ -45,21 +65,23 @@ public class DialogActiviteit extends Dialog
         {
             // NAME
             tvName = new TextView(context);
-            tvName.setText("Name");
+            tvName.setText(R.string.lblTitle);
             mainpanel.addView(tvName);
             txtName = new EditText(context);
             txtName.setText(activiteitI.getActiviteitTitle());
+            txtName.setSelection(txtName.getText().length());
             mainpanel.addView(txtName);
-            // CALENDAR
+            // CALENDAR tv
             tvCal = new TextView(context);
-            tvCal.setText("Calendar");
+            tvCal.setText(R.string.lblCalendar);
             mainpanel.addView(tvCal);
-            txtCal = new EditText(context);
-            txtCal.setText(activiteitI.getKalenderName());
-            mainpanel.addView(txtCal);
+            // CALENDAR spinner
+            spnCal = new Spinner(context);
+            initSpinner(context, spnCal);
+            mainpanel.addView(spnCal, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             // BEGIN
             tvBegin = new TextView(context);
-            tvBegin.setText("Begin");
+            tvBegin.setText(R.string.lblStartTime);
             mainpanel.addView(tvBegin);
             btnBegin = new Button(context);
             btnBegin.setText(activiteitI.getStartTime());
@@ -67,17 +89,15 @@ public class DialogActiviteit extends Dialog
             mainpanel.addView(btnBegin);
             // END
             tvEnd = new TextView(context);
-            tvEnd.setText("End");
+            tvEnd.setText(R.string.lblStopTime);
             mainpanel.addView(tvEnd);
             btnEnd = new Button(context);
             String stoptime = activiteitI.getStopTime();
-            if (stoptime != null)
-            {
+            if (stoptime != null) {
                 btnEnd.setText(activiteitI.getStopTime());
                 // TODO: time picker
-            } else
-            {
-                btnEnd.setText("running");
+            } else {
+                btnEnd.setText(R.string.running);
                 btnEnd.setEnabled(false);
             }
             // TODO: add listener
@@ -87,7 +107,7 @@ public class DialogActiviteit extends Dialog
             {
                 // CANCEL
                 btnCancel = new Button(context);
-                btnCancel.setText("Cancel");
+                btnCancel.setText(R.string.cancel);
                 btnCancel.setOnClickListener(new android.view.View.OnClickListener()
                 {
 
@@ -99,7 +119,7 @@ public class DialogActiviteit extends Dialog
                 buttonPanel.addView(btnCancel, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
                 // OK
                 btnOK = new Button(context);
-                btnOK.setText("OK");
+                btnOK.setText(R.string.ok);
                 btnOK.setOnClickListener(new android.view.View.OnClickListener()
                 {
 
@@ -119,21 +139,35 @@ public class DialogActiviteit extends Dialog
     private void btnOK()
     {
         String title = txtName.getText().toString();
-        String kName = txtCal.getText().toString();
-        Kalender k = Kalender.getKalenderByName(context, kName);
-        if (title != null)
-        {
+        Kalender k = selectedKalender;
+        if (title != null) {
             activiteitI.setActiviteitTitle(title);
         }
-        if (k != null)
-        {
-            activiteitI.setKalender(k);
-        }
+        activiteitI.setKalender(k);
         dismiss();
     }
 
     private void btnCancel()
     {
         dismiss();
+    }
+
+    private void initSpinner(Context context, Spinner spinner)
+    {
+        Kalender[] kalenders = Kalender.retrieveKalenders(context);
+        if (kalenders == null) {
+//            Toast.makeText(this, "Error initializing calendars", Toast.LENGTH_LONG).show();
+            return;
+        }
+        this.selectedKalender = kalenders[0];
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_dropdown_item, kalenders);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // add listener
+        spinner.setOnItemSelectedListener(spinnerListener);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
     }
 }

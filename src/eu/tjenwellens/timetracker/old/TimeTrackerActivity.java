@@ -1,4 +1,4 @@
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.old;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -13,15 +13,23 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.*;
+import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
+import eu.tjenwellens.timetracker.detail.DetailHandler;
+import eu.tjenwellens.timetracker.detail.DetailPanel;
 import eu.tjenwellens.timetracker.gestures.SimpleGestureFilter;
 import eu.tjenwellens.timetracker.gestures.SimpleGestureListener;
+import eu.tjenwellens.timetracker.macro.MacroButtonPanel;
+import eu.tjenwellens.timetracker.macro.MacroHandler;
+import eu.tjenwellens.timetracker.macro.MacroI;
+import eu.tjenwellens.timetracker.main.*;
+import eu.tjenwellens.timetracker.old.preferences.PreferencesActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeTrackerActivity extends Activity implements GetContent, ActiviteitHandler, SimpleGestureListener, DetailHandler, MacroHandler
+public class TimeTrackerActivity extends Activity implements ActiviteitHandler, SimpleGestureListener, DetailHandler, MacroHandler
 {
 
     public static final String CONTENT_CALENDARS = "content://com.android.calendar/calendars";
@@ -34,7 +42,7 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     // detail screen selection
     private ArrayList<DetailPanel> currentDetails = new ArrayList<DetailPanel>();
     // macro
-    private MacroPanel macroPanel;
+    private MacroButtonPanel macroPanel;
     // gestures
     private SimpleGestureFilter detector;
     // flippering
@@ -266,7 +274,7 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     public void deleteDetail(DetailPanel dp)
     {
-        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.detailsContainer);
+        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.pnlDetail);
         if (currentDetails.remove(dp)) {
             detailViewContainer.removeView(dp);
         }
@@ -276,7 +284,7 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     public void btnDetailCancel(View arg0)
     {
         EditText et = (EditText) findViewById(R.id.txtDetail);
-        et.setText("");
+        et.setText(R.string.none);
     }
 
     public void btnDetailAdd(View arg0)
@@ -285,7 +293,7 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
         String text = et.getText().toString();
         DetailPanel dp = new DetailPanel(this, this, text);
         addDetail(dp);
-        et.setText("");
+        et.setText(R.string.none);
     }
 
     public void btnDetailTime(View arg0)
@@ -296,15 +304,14 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     public void btnMacroAdd(View arg0)
     {
-        final EditText txtTitle = (EditText) findViewById(R.id.txtMacroName);
-        final EditText txtKal = (EditText) findViewById(R.id.txtMacroCalendar);
-        String kalenderString = txtKal.getText().toString();
+        final EditText txtTitle = (EditText) findViewById(R.id.txtMacroSettingsTitle);
+        final Spinner txtKal = (Spinner) findViewById(R.id.spinnerMacroSettingsCalendar);
+        String kalenderString = txtKal.toString();
         String title = txtTitle.getText().toString();
         Kalender kalender = Kalender.getKalenderByName(this, kalenderString);
         macroPanel.add(title, kalender);
 
-        txtTitle.setText("");
-        txtKal.setText("");
+        txtTitle.setText(R.string.none);
         Log.d("----------------added new macro: ", title + " - " + kalender);
     }
 
@@ -315,10 +322,8 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     public void btnMacroClear(View arg0)
     {
-        final EditText txtTitle = (EditText) findViewById(R.id.txtMacroName);
-        final EditText txtKal = (EditText) findViewById(R.id.txtMacroCalendar);
-        txtTitle.setText("");
-        txtKal.setText("");
+        final EditText txtTitle = (EditText) findViewById(R.id.txtMacroSettingsTitle);
+        txtTitle.setText(R.string.none);
     }
 
     public void btnMacroBack(View arg0)
@@ -328,14 +333,14 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     private void deleteDetails()
     {
-        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.detailsContainer);
+        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.pnlDetail);
         detailViewContainer.removeAllViews();
         currentDetails.clear();
     }
 
     private void addDetail(DetailPanel dp)
     {
-        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.detailsContainer);
+        final LinearLayout detailViewContainer = (LinearLayout) findViewById(R.id.pnlDetail);
         detailViewContainer.addView(dp);
         currentDetails.add(dp);
     }
@@ -417,21 +422,15 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
     private void initMainGUI()
     {
 //        setContentView(R.layout.main);
-        activiteitViewContainer = ((ViewGroup) findViewById(R.id.activiteitenLinearLayout));
+        activiteitViewContainer = ((ViewGroup) findViewById(R.id.pnlMainActiviteiten));
         initGUIButtons();
     }
 
     private void initGUIButtons()
     {
-        Button detail = (Button) findViewById(R.id.btnDetails);
-        detail.setText("<-- Details");
-        Button macro1 = (Button) findViewById(R.id.btnMacro1);
-//        Button macro2 = (Button) findViewById(R.id.btnMacro2);
+        Button macros = (Button) findViewById(R.id.btnMainMacros);
         Button btnDetailCancel = (Button) findViewById(R.id.btnDetailCancel);
-        macro1.setEnabled(true);
-        macro1.setText("Macro's -->");
-//        macro2.setEnabled(true);
-//        macro2.setText("Leren");
+        macros.setEnabled(true);
         btnDetailCancel.setEnabled(true);
 
         setORresetSelectionMade(currentActiviteit);
@@ -439,9 +438,9 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     private void setORresetSelectionMade(ActiviteitPanel a)
     {
-        Button detail = (Button) findViewById(R.id.btnDetails);
-        Button cancel = (Button) findViewById(R.id.btnCancel);
-        Button resume = (Button) findViewById(R.id.btnResume);
+        Button detail = (Button) findViewById(R.id.btnMainDetails);
+        Button cancel = (Button) findViewById(R.id.btnMainDelete);
+        Button resume = (Button) findViewById(R.id.btnMainResume);
         Button detailAdd = (Button) findViewById(R.id.btnDetailAdd);
         Button detailSave = (Button) findViewById(R.id.btnDetailSave);
         if (a == null) {
@@ -596,12 +595,17 @@ public class TimeTrackerActivity extends Activity implements GetContent, Activit
 
     private void initMacroGUI()
     {
-        final LinearLayout macroContainer = (LinearLayout) findViewById(R.id.macroContainer);
+        final LinearLayout macroContainer = (LinearLayout) findViewById(R.id.pnlMacro);
         if (macroContainer != null) {
-            macroPanel = new MacroPanel(this, this);
+            macroPanel = new MacroButtonPanel(this, this);
             macroContainer.addView(macroPanel);
         } else {
             Toast.makeText(this, "Macro's not initialized", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void editDetail(DetailPanel dp)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

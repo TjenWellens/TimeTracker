@@ -2,14 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.main;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.*;
+import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.macro.MacroI;
 
 /**
  *
@@ -52,7 +54,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     private void initGUI(Context context)
     {
         setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         lp.setMargins(10, 5, 10, 5);
         setLayoutParams(lp);
         setBackgroundColor(Color.LTGRAY);
@@ -166,6 +168,21 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         stopButton.setEnabled(activiteit.isRunning());
     }
 
+    public void updateActiviteit(Activiteit a)
+    {
+        this.activiteit = a;
+        updateAll();
+    }
+
+    private void updateAll()
+    {
+        updateButtons();
+        updateTVCalendar();
+        updateTVDuration();
+        updateTVName();
+        updateTVStart();
+    }
+
     public Evenement getEvenement()
     {
         return activiteit.getEvenement();
@@ -221,7 +238,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         return activiteit.getActiviteitTitle();
     }
 
-    public long getActiviteitId()
+    public int getActiviteitId()
     {
         return activiteit.getActiviteitId();
     }

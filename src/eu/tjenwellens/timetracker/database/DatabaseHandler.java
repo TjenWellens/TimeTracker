@@ -5,9 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import eu.tjenwellens.timetracker.Activiteit;
-import eu.tjenwellens.timetracker.Macro;
-import eu.tjenwellens.timetracker.MacroI;
+import eu.tjenwellens.timetracker.main.Activiteit;
+import eu.tjenwellens.timetracker.macro.Macro;
+import eu.tjenwellens.timetracker.macro.MacroI;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     private static final String TABLE_MACROS = "macros";
     // Create table
     private static final String CREATE_MACROS_TABLE = "CREATE TABLE " + TABLE_MACROS + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_KAL_NAME + " TEXT,"
             + KEY_TITLE + " TEXT"
             + ")";
@@ -125,7 +125,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
             cursor.moveToFirst();
         }
 
-        long db_id = Long.parseLong(cursor.getString(0));
+        int db_id = Integer.parseInt(cursor.getString(0));
         String db_kalendar_name = cursor.getString(1);
         Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
         String db_title = cursor.getString(2);
@@ -158,7 +158,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                long db_id = Long.parseLong(cursor.getString(0));
+                int db_id = Integer.parseInt(cursor.getString(0));
                 String db_kalendar_name = cursor.getString(1);
                 Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
                 String db_title = cursor.getString(2);
@@ -228,6 +228,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_ID, macro.getID()); // kalender
         values.put(KEY_KAL_NAME, macro.getKalenderName()); // kalender
         values.put(KEY_TITLE, macro.getActiviteitTitle());        // title
 
@@ -252,7 +253,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
     public List<MacroI> getAllMacros()
     {
-        List<MacroI> contactList = new ArrayList<MacroI>();
+        List<MacroI> macros = new ArrayList<MacroI>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_MACROS;
 
@@ -262,19 +263,19 @@ public class DatabaseHandler extends SQLiteOpenHelper
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-//                long db_id = Long.parseLong(cursor.getString(0));
+                int db_id = Integer.parseInt(cursor.getString(0));
                 String db_kalendar_name = cursor.getString(1);
                 Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
                 String db_title = cursor.getString(2);
 
-                MacroI macro = new Macro(db_title, kalender);
+                MacroI macro = new Macro(db_id, db_title, kalender);
 
                 // Adding contact to list
-                contactList.add(macro);
+                macros.add(macro);
             } while (cursor.moveToNext());
         }
 
         // return contact list
-        return contactList;
+        return macros;
     }
 }

@@ -1,0 +1,91 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/LinearLayout01"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnMacroSettingsSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnMacroSettingsSave"
+            android:text="@string/leftSave" />
+
+        <Button
+            android:id="@+id/btnMacroSettingsCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnMacroSettingsCancel"
+            android:text="@string/leftCancel" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:id="@+id/pnlMacroSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tvMacroSettingsName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lblTitle" />
+
+    <EditText
+        android:id="@+id/txtMacroSettingsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/hintTitle" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/tvMacroSettingsCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lblCalendar" />
+
+    <Spinner
+        android:id="@+id/spinnerMacroSettingsCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnMacroSettingsClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnMacroSettingsClear"
+            android:text="@string/clear" />
+
+        <Button
+            android:id="@+id/btnMacroSettingsAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnMacroSettingsAdd"
+            android:text="@string/add" />
+    </LinearLayout>
+
+</LinearLayout>

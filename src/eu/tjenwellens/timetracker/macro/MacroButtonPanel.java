@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.macro;
 
 import android.content.Context;
 import android.view.View;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author Tjen
  */
-public class MacroPanel extends LinearLayout
+public class MacroButtonPanel extends LinearLayout
 {
 
     // gui
@@ -40,7 +40,7 @@ public class MacroPanel extends LinearLayout
     private ArrayList<LinearLayout> onderverdeling = new ArrayList<LinearLayout>();
     private int sqrt = 0;
 
-    public MacroPanel(Context context, MacroHandler macroHandler)
+    public MacroButtonPanel(Context context, MacroHandler macroHandler)
     {
         super(context);
         this.context = context;
@@ -50,8 +50,10 @@ public class MacroPanel extends LinearLayout
 
     public void addAllButtons(List<MacroI> macros)
     {
-        for (MacroI macroI : macros) {
-            addButtonSilent(macroI);
+        if (macros != null) {
+            for (MacroI macroI : macros) {
+                addButtonSilent(macroI);
+            }
         }
         updateSqrt();
         resetButtons();
@@ -116,12 +118,12 @@ public class MacroPanel extends LinearLayout
         setLayoutParams(lp);
     }
 
-    void add(String title, Kalender kalender)
+    public void add(String title, Kalender kalender)
     {
         addButton(new Macro(title, kalender));
     }
 
-    void reset()
+    public void reset()
     {
         macros.clear();
         sqrt = 0;

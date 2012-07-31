@@ -1,7 +1,8 @@
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.old.preferences;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import eu.tjenwellens.timetracker.R;
 
 public class PreferencesActivity extends PreferenceActivity
 {

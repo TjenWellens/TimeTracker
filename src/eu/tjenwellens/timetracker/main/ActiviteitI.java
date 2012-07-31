@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.main;
 
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
@@ -40,7 +40,7 @@ public interface ActiviteitI
 
     String getActiviteitTitle();
 
-    long getActiviteitId();
+    int getActiviteitId();
 
     boolean isRunning();
 

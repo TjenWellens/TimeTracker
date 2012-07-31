@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker;
+package eu.tjenwellens.timetracker.macro;
 
 import eu.tjenwellens.timetracker.calendar.Kalender;
 
@@ -13,11 +13,25 @@ import eu.tjenwellens.timetracker.calendar.Kalender;
 public class Macro implements MacroI
 {
 
+    private static int idCounter;
+    private int id;
     private String title;
     private Kalender kalender;
 
     public Macro(String title, Kalender kalender)
     {
+        idCounter++;
+        this.id = idCounter;
+        this.title = title;
+        this.kalender = kalender;
+    }
+
+    public Macro(int id, String title, Kalender kalender)
+    {
+        this.id = id;
+        if (idCounter < id) {
+            idCounter = id;
+        }
         this.title = title;
         this.kalender = kalender;
     }
@@ -49,5 +63,10 @@ public class Macro implements MacroI
             kalName = kalender.getName();
         }
         return kalName;
+    }
+
+    public int getID()
+    {
+        return this.id;
     }
 }

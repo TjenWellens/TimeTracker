@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-public class Kalender
+public class Kalender implements CharSequence
 {
 
     public static final String CONTENT_CALENDARS = "content://com.android.calendar/calendars";
@@ -82,5 +82,26 @@ public class Kalender
             }
         }
         return kalender;
+    }
+
+    public int length()
+    {
+        return name.length();
+    }
+
+    public char charAt(int arg0)
+    {
+        return name.charAt(arg0);
+    }
+
+    public CharSequence subSequence(int arg0, int arg1)
+    {
+        return name.subSequence(arg0, arg1);
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
     }
 }

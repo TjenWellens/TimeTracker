@@ -1,0 +1,93 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/linearLayout1"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnDetailCancel"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnDetailCancel"
+            android:text="@string/rightCancel" />
+
+        <Button
+            android:id="@+id/btnDetailSave"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnDetailSave"
+            android:text="@string/rightSave" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:gravity="bottom"
+        android:scrollbars="vertical" >
+
+        <LinearLayout
+            android:id="@+id/pnlDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:orientation="vertical" >
+
+            <!-- hier komen de coded elementen -->
+
+        </LinearLayout>
+    </ScrollView>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+            
+        <Button
+            android:id="@+id/btnDetailTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="btnDetailTime"
+            android:text="@string/time" />
+            
+        <EditText
+            android:id="@+id/txtDetail"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/hintDescription" >
+
+        </EditText>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnDetailClear"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnDetailClear"
+            android:text="@string/clear" />
+
+        <Button
+            android:id="@+id/btnDetailAdd"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="btnDetailAdd"
+            android:text="@string/add" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -5,8 +5,8 @@
 package eu.tjenwellens.timetracker.calendar;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
-import eu.tjenwellens.timetracker.GetContent;
 
 /**
  *
@@ -38,7 +38,7 @@ public class Evenement implements Evenement_ContentValues, Evenement_values
         this.endTimeMillis = endTimeMillis;
     }
     
-    public static void post(GetContent c, Evenement e)
+    public static void post(Context c, Evenement e)
     {
         c.getContentResolver().insert(Uri.parse(CONTENT_EVENTS), e.contentValues());
     }
