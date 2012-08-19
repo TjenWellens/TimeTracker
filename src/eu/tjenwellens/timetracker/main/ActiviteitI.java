@@ -4,6 +4,7 @@
  */
 package eu.tjenwellens.timetracker.main;
 
+import android.content.Context;
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 
@@ -47,4 +48,12 @@ public interface ActiviteitI
     String getDescription();
 
     String[] getDescriptionEntries();
+
+    void deleteDBActiviteit(Context context);
+
+    void updateDBActiviteit(Context context);
+
+    long getBeginMillis();
+
+    long getEndMillis();
 }

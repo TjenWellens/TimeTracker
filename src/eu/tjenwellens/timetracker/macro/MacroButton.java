@@ -56,8 +56,18 @@ public class MacroButton extends Button implements MacroI
         return macro.getKalenderName();
     }
 
-    public int getID()
+    public int getId()
     {
-        return macro.getID();
+        return macro.getId();
+    }
+
+    public void deleteDBMacro(Context context)
+    {
+        macro.deleteDBMacro(context);
+    }
+
+    public void updateDBMacro(Context context)
+    {
+        macro.updateDBMacro(context);
     }
 }

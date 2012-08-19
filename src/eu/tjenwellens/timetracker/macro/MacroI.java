@@ -4,6 +4,7 @@
  */
 package eu.tjenwellens.timetracker.macro;
 
+import android.content.Context;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 
 /**
@@ -13,15 +14,19 @@ import eu.tjenwellens.timetracker.calendar.Kalender;
 public interface MacroI
 {
 
-    public Kalender getKalender();
+    Kalender getKalender();
 
-    public String getKalenderName();
+    String getKalenderName();
 
-    public int getID();
+    int getId();
 
-    public void setKalender(Kalender kalender);
+    void setKalender(Kalender kalender);
 
-    public String getActiviteitTitle();
+    String getActiviteitTitle();
 
-    public void setTitle(String title);
+    void setTitle(String title);
+
+    void deleteDBMacro(Context context);
+
+    void updateDBMacro(Context context);
 }

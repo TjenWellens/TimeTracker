@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.tjenwellens.timetracker.main;
 
 import android.content.Context;
@@ -24,18 +20,18 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     private LinearLayout pnlText;
     private TextView tvName, tvCalendar, tvStartTime, tvDuration;
     private Button saveButton, stopButton;
-    private Activiteit activiteit;
+    private ActiviteitI activiteit;
     private ActiviteitHandler activiteitHandler;
 
     public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler)
     {
         super(context);
-        this.activiteit = new Activiteit();
+        this.activiteit = ActiviteitFactory.createActiviteit(context);
         this.activiteitHandler = activiteitHandler;
         initGUI(context);
     }
 
-    public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler, Activiteit activiteit)
+    public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler, ActiviteitI activiteit)
     {
         super(context);
         this.activiteit = activiteit;
@@ -46,7 +42,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     public ActiviteitPanel(Context context, ActiviteitHandler activiteitHandler, MacroI macro)
     {
         super(context);
-        this.activiteit = new Activiteit(macro);
+        this.activiteit = ActiviteitFactory.createActiviteit(context, macro);
         this.activiteitHandler = activiteitHandler;
         initGUI(context);
     }
@@ -168,7 +164,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         stopButton.setEnabled(activiteit.isRunning());
     }
 
-    public void updateActiviteit(Activiteit a)
+    public void updateActiviteit(ActiviteitI a)
     {
         this.activiteit = a;
         updateAll();
@@ -278,11 +274,6 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         radioButton.setChecked(false);
     }
 
-    public Activiteit getActiviteit()
-    {
-        return activiteit;
-    }
-
     public void setDescription(String[] description)
     {
         activiteit.setDescription(description);
@@ -296,5 +287,25 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
     public String[] getDescriptionEntries()
     {
         return activiteit.getDescriptionEntries();
+    }
+
+    public void deleteDBActiviteit(Context context)
+    {
+        activiteit.deleteDBActiviteit(context);
+    }
+
+    public void updateDBActiviteit(Context context)
+    {
+        activiteit.updateDBActiviteit(context);
+    }
+
+    public long getBeginMillis()
+    {
+        return activiteit.getBeginMillis();
+    }
+
+    public long getEndMillis()
+    {
+        return activiteit.getEndMillis();
     }
 }

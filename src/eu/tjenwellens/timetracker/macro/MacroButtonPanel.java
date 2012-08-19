@@ -120,11 +120,14 @@ public class MacroButtonPanel extends LinearLayout
 
     public void add(String title, Kalender kalender)
     {
-        addButton(new Macro(title, kalender));
+        addButton(MacroFactory.createMacro(context, title, kalender));
     }
 
     public void reset()
     {
+        for (MacroI macro : macros) {
+            macro.deleteDBMacro(context);
+        }
         macros.clear();
         sqrt = 0;
         this.removeAllViews();

@@ -2,11 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker.main;
+package eu.tjenwellens.timetracker.old;
 
+import android.content.Context;
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.macro.MacroI;
+import eu.tjenwellens.timetracker.main.ActiviteitI;
+import eu.tjenwellens.timetracker.main.Time;
 
 /**
  *
@@ -258,5 +262,20 @@ public class Activiteit implements ActiviteitI
     public long getEndMillis()
     {
         return endTimeMillis;
+    }
+
+    public void deleteDBActiviteit(Context context)
+    {
+        DatabaseHandler.getInstance(context).deleteActiviteit(this);
+    }
+
+    private void saveActiviteit(Context context)
+    { // TODO: call on create
+        DatabaseHandler.getInstance(context).addActiviteit(this);
+    }
+
+    public void updateDBActiviteit(Context context)
+    {
+        DatabaseHandler.getInstance(context).updateActiviteit(this);
     }
 }

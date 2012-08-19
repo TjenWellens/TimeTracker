@@ -107,8 +107,18 @@ public class MacroSettingsPanel extends LinearLayout implements MacroI
         macro.setTitle(title);
     }
 
-    public int getID()
+    public int getId()
     {
-        return macro.getID();
+        return macro.getId();
+    }
+
+    public void deleteDBMacro(Context context)
+    {
+        macro.deleteDBMacro(context);
+    }
+
+    public void updateDBMacro(Context context)
+    {
+        macro.updateDBMacro(context);
     }
 }

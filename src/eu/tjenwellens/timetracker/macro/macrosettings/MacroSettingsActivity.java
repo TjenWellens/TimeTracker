@@ -13,8 +13,8 @@ import android.widget.*;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
-import eu.tjenwellens.timetracker.macro.Macro;
 import eu.tjenwellens.timetracker.macro.MacroActivity;
+import eu.tjenwellens.timetracker.macro.MacroFactory;
 import eu.tjenwellens.timetracker.macro.MacroI;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +142,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     {
         final EditText txtTitle = (EditText) findViewById(R.id.txtMacroSettingsTitle);
         String title = txtTitle.getText().toString();
-        Macro m = new Macro(title, selectedKalender);
+        MacroI m = MacroFactory.createMacro(this, title, selectedKalender);
         addMacro(m);
         // clear text
         txtTitle.setText(R.string.none);

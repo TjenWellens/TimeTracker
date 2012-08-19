@@ -5,10 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import eu.tjenwellens.timetracker.main.Activiteit;
-import eu.tjenwellens.timetracker.macro.Macro;
-import eu.tjenwellens.timetracker.macro.MacroI;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.macro.MacroFactory;
+import eu.tjenwellens.timetracker.macro.MacroI;
+import eu.tjenwellens.timetracker.main.ActiviteitFactory;
+import eu.tjenwellens.timetracker.main.ActiviteitI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
      * All CRUD(Create, Read, Update, Delete) Operations
      */
     // Adding new contact
-    public void addActiviteit(Activiteit activiteit)
+    public void addActiviteit(ActiviteitI activiteit)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -108,7 +109,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     }
 
     // Getting single contact
-    public Activiteit getActiviteit(int id)
+    public ActiviteitI getActiviteit(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -133,22 +134,22 @@ public class DatabaseHandler extends SQLiteOpenHelper
         long db_stop = Long.parseLong(cursor.getString(4));
         String db_description = cursor.getString(5);
 
-        Activiteit activiteit = new Activiteit(db_id, kalender, db_title, db_start, db_stop, db_description);
+        ActiviteitI activiteit = ActiviteitFactory.createActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
         // return contact
         return activiteit;
     }
 
-    public void addAllActiviteiten(List<Activiteit> activiteiten)
+    public void addAllActiviteiten(List<ActiviteitI> activiteiten)
     {
-        for (Activiteit activiteit : activiteiten) {
+        for (ActiviteitI activiteit : activiteiten) {
             addActiviteit(activiteit);
         }
     }
 
     // Getting All Contacts
-    public List<Activiteit> getAllActiviteiten()
+    public List<ActiviteitI> getAllActiviteiten()
     {
-        List<Activiteit> contactList = new ArrayList<Activiteit>();
+        List<ActiviteitI> contactList = new ArrayList<ActiviteitI>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_ACTIVITEITEN;
 
@@ -166,7 +167,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
                 long db_stop = Long.parseLong(cursor.getString(4));
                 String db_description = cursor.getString(5);
 
-                Activiteit activiteit = new Activiteit(db_id, kalender, db_title, db_start, db_stop, db_description);
+                ActiviteitI activiteit = ActiviteitFactory.createActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
 
                 // Adding contact to list
                 contactList.add(activiteit);
@@ -178,7 +179,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     }
 
     // Updating single contact
-    public int updateActiviteit(Activiteit activiteit)
+    public int updateActiviteit(ActiviteitI activiteit)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -196,7 +197,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
     }
 
     // Deleting single contact
-    public void deleteActiviteit(Activiteit activiteit)
+    public void deleteActiviteit(ActiviteitI activiteit)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ACTIVITEITEN, KEY_ID + " = ?",
@@ -228,13 +229,28 @@ public class DatabaseHandler extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, macro.getID()); // kalender
+        values.put(KEY_ID, macro.getId()); // kalender
         values.put(KEY_KAL_NAME, macro.getKalenderName()); // kalender
         values.put(KEY_TITLE, macro.getActiviteitTitle());        // title
 
         // Inserting Row
         db.insert(TABLE_MACROS, null, values);
         db.close(); // Closing database connection
+    }
+
+    // Updating single contact
+    public int updateMacro(MacroI macro)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, macro.getId()); // kalender
+        values.put(KEY_KAL_NAME, macro.getKalenderName()); // kalender
+        values.put(KEY_TITLE, macro.getActiviteitTitle());        // title
+
+        // updating row
+        return db.update(TABLE_MACROS, values, KEY_ID + " = ?",
+                new String[]{String.valueOf(macro.getId())});
     }
 
     public void addAllMacros(List<MacroI> macros)
@@ -248,6 +264,15 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_MACROS, null, null);
+        db.close();
+    }
+
+    // Deleting single contact
+    public void deleteMacro(MacroI macro)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_MACROS, KEY_ID + " = ?",
+                new String[]{String.valueOf(macro.getId())});
         db.close();
     }
 
@@ -268,7 +293,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
                 Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
                 String db_title = cursor.getString(2);
 
-                MacroI macro = new Macro(db_id, db_title, kalender);
+                MacroI macro =  MacroFactory.createMacro(context, db_id, db_title, kalender);
 
                 // Adding contact to list
                 macros.add(macro);

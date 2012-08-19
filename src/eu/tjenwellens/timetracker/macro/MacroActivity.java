@@ -47,8 +47,12 @@ public class MacroActivity extends Activity implements MacroHandler
 
     private void initMacros(List<MacroI> macros)
     {
-        macroButtonPanel.reset();
         macroButtonPanel.addAllButtons(macros);
+    }
+    
+    private void resetMacros()
+    {
+        macroButtonPanel.reset();
     }
 
     private void initMacroGUI(List<MacroI> macros)
@@ -67,16 +71,17 @@ public class MacroActivity extends Activity implements MacroHandler
         // load macros
         DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         List<MacroI> macros = dbh.getAllMacros();
-        dbh.clearMacros();
+//        dbh.clearMacros();
         return macros;
     }
 
     private void saveMacros()
     {
         // save macros
-        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+//        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         for (MacroI macro : macroButtonPanel.getMacros()) {
-            dbh.addMacro(macro);
+            macro.updateDBMacro(this);
+//            dbh.addMacro(macro);
         }
     }
 
@@ -108,6 +113,7 @@ public class MacroActivity extends Activity implements MacroHandler
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (resultCode == Activity.RESULT_OK && requestCode == ActivityResults.MACRO_DETAILS_START) {
+            resetMacros();
             List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
             initMacros(macros);
         }
@@ -126,7 +132,7 @@ public class MacroActivity extends Activity implements MacroHandler
         }
     }
 
-    public static List<MacroI> intentToMacros(Context c, Intent intent, String key)
+    public static List<MacroI> intentToMacros(Context context, Intent intent, String key)
     {
         int amount = intent.getIntExtra(key + "_amount", -1);
         if (amount <= 0) {
@@ -136,8 +142,8 @@ public class MacroActivity extends Activity implements MacroHandler
         List<MacroI> macros = new ArrayList<MacroI>(amount);
         for (int i = 0; i < amount; i++) {
             String title = intent.getStringExtra(key + "title" + i);
-            Kalender k = Kalender.getKalenderByName(c, intent.getStringExtra(key + "kalender" + i));
-            macros.add(new Macro(title, k));
+            Kalender k = Kalender.getKalenderByName(context, intent.getStringExtra(key + "kalender" + i));
+            macros.add(MacroFactory.createMacro(context, title, k));
         }
         return macros;
     }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.tjenwellens.timetracker.main;
 
 import android.app.Activity;
@@ -19,8 +15,9 @@ import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.detail.DetailActivity;
-import eu.tjenwellens.timetracker.macro.Macro;
 import eu.tjenwellens.timetracker.macro.MacroActivity;
+import eu.tjenwellens.timetracker.macro.MacroFactory;
+import eu.tjenwellens.timetracker.macro.MacroI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +52,10 @@ public class MainActivity extends Activity implements ActiviteitHandler
     {
         // save activiteiten
         List<ActiviteitPanel> an = new ArrayList<ActiviteitPanel>(activiteiten);
-        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+//        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         for (ActiviteitPanel ap : an) {
-            dbh.addActiviteit(ap.getActiviteit());
+//            dbh.addActiviteit(ap);
+            ap.deleteDBActiviteit(this);
             removeActiviteit(ap);
         }
     }
@@ -72,10 +70,10 @@ public class MainActivity extends Activity implements ActiviteitHandler
     {
         // load activiteiten, remove activiteiten from database
         DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        for (Activiteit activiteit : dbh.getAllActiviteiten()) {
+        for (ActiviteitI activiteit : dbh.getAllActiviteiten()) {
             addActiviteit(new ActiviteitPanel(this, this, activiteit));
         }
-        dbh.clearActiviteiten();
+//        dbh.clearActiviteiten();
     }
 
     private void addActiviteit(ActiviteitPanel a)
@@ -229,7 +227,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
                 // start the choosen macro
                 String title = data.getStringExtra(MacroActivity.MACRO_TITLE);
                 String calendar = data.getStringExtra(MacroActivity.MACRO_CALENDAR);
-                Macro m = new Macro(title, Kalender.getKalenderByName(this, calendar));
+                MacroI m = MacroFactory.createMacro(this, title, Kalender.getKalenderByName(this, calendar));
                 addActiviteit(new ActiviteitPanel(this, this, m));
             } else if (requestCode == ActivityResults.DETAIL_START) {
                 // update detail
@@ -266,7 +264,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
         addActiviteit(new ActiviteitPanel(this, this));
     }
 
-    private boolean updateActivity(Activiteit a)
+    private boolean updateActivity(ActiviteitI a)
     {
         if (a == null) {
             return false;

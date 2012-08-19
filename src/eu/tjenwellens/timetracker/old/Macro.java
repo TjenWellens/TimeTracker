@@ -2,9 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.tjenwellens.timetracker.macro;
+package eu.tjenwellens.timetracker.old;
 
+import android.content.Context;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.database.DatabaseHandler;
+import eu.tjenwellens.timetracker.macro.MacroI;
 
 /**
  *
@@ -65,8 +68,23 @@ public class Macro implements MacroI
         return kalName;
     }
 
-    public int getID()
+    public int getId()
     {
         return this.id;
+    }
+
+    public void deleteDBMacro(Context context)
+    {
+        DatabaseHandler.getInstance(context).deleteMacro(this);
+    }
+
+    public void saveMacro(Context context)
+    { //TODO: call on create
+        DatabaseHandler.getInstance(context).addMacro(this);
+    }
+
+    public void updateDBMacro(Context context)
+    {
+        DatabaseHandler.getInstance(context).updateMacro(this);
     }
 }

@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
-import eu.tjenwellens.timetracker.main.Activiteit;
+import eu.tjenwellens.timetracker.main.ActiviteitFactory;
 import eu.tjenwellens.timetracker.main.MainActivity;
 
 /**
@@ -44,7 +44,7 @@ public class DetailSettingsActivity extends Activity
             return;
         }
         final EditText txtDetail = (EditText) findViewById(R.id.txtDetailSettingsDetail);
-        txtDetail.setText(Activiteit.mergeDetailEntries(detail));
+        txtDetail.setText(ActiviteitFactory.mergeDetailEntries(detail));
         txtDetail.setSelection(txtDetail.getText().length());
     }
 
@@ -60,7 +60,7 @@ public class DetailSettingsActivity extends Activity
         final EditText txtDetail = (EditText) findViewById(R.id.txtDetailSettingsDetail);
         detailString = txtDetail.getText().toString();
         Intent returnIntent = new Intent();
-        MainActivity.arrayToIntent(returnIntent, Activiteit.splitDetailToEntries(detailString), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
+        MainActivity.arrayToIntent(returnIntent, ActiviteitFactory.splitDetailToEntries(detailString), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
         setResult(RESULT_OK, returnIntent);
         finish();
     }

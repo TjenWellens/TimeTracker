@@ -107,19 +107,20 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
     {
         // load activiteiten, remove activiteiten from database
         DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        for (Activiteit activiteit : dbh.getAllActiviteiten()) {
+        for (ActiviteitI activiteit : dbh.getAllActiviteiten()) {
             addActiviteit(new ActiviteitPanel(this, this, activiteit));
         }
-        dbh.clearActiviteiten();
+//        dbh.clearActiviteiten();
     }
 
     private void saveActiviteiten()
     {
         // save activiteiten
         List<ActiviteitPanel> an = new ArrayList<ActiviteitPanel>(activiteiten);
-        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+//        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         for (ActiviteitPanel ap : an) {
-            dbh.addActiviteit(ap.getActiviteit());
+//            dbh.addActiviteit(ap);
+            ap.updateDBActiviteit(this);
             removeActiviteit(ap);
         }
     }
@@ -138,9 +139,10 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
     {
         // save macros
         List<MacroI> macros = macroPanel.getMacros();
-        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+//        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         for (MacroI macro : macros) {
-            dbh.addMacro(macro);
+//            dbh.addMacro(macro);
+            macro.updateDBMacro(this);
         }
     }
 
