@@ -126,6 +126,7 @@ public class MacroButtonPanel extends LinearLayout
     public void reset()
     {
         for (MacroI macro : macros) {
+            //TODO: klopt dit wel?
             macro.deleteDBMacro(context);
         }
         macros.clear();

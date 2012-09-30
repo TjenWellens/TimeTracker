@@ -13,6 +13,7 @@ import android.widget.*;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.macro.MacroActivity;
 import eu.tjenwellens.timetracker.macro.MacroFactory;
 import eu.tjenwellens.timetracker.macro.MacroI;
@@ -70,6 +71,13 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
         macroSettingsContainer.removeView(m);
         macroPanels.remove(m);
+        removeDBMacro(m);
+    }
+    
+    private void removeDBMacro(MacroI macro)
+    {
+        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+        dbh.deleteMacro(macro);
     }
 
     private void initMacroSettingsGUI(List<MacroI> macros)

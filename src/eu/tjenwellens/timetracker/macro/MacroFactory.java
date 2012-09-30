@@ -14,7 +14,6 @@ import eu.tjenwellens.timetracker.database.DatabaseHandler;
  */
 public class MacroFactory
 {
-
     private MacroFactory()
     {
     }
@@ -26,16 +25,13 @@ public class MacroFactory
         return macro;
     }
 
-    public static MacroI createMacro(Context context, int id, String title, Kalender kalender)
+    public static MacroI loadMacro(Context context, int id, String title, Kalender kalender)
     {
-        Macro macro = new Macro(id, title, kalender);
-        macro.saveMacro(context);
-        return macro;
+        return new Macro(id, title, kalender);
     }
 
     private static class Macro implements MacroI
     {
-
         private static int idCounter;
         private int id;
         private String title;
@@ -52,7 +48,8 @@ public class MacroFactory
         public Macro(int id, String title, Kalender kalender)
         {
             this.id = id;
-            if (idCounter < id) {
+            if (idCounter < id)
+            {
                 idCounter = id;
             }
             this.title = title;
@@ -82,7 +79,8 @@ public class MacroFactory
         public String getKalenderName()
         {
             String kalName = "";
-            if (kalender != null) {
+            if (kalender != null)
+            {
                 kalName = kalender.getName();
             }
             return kalName;

@@ -293,7 +293,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
                 Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
                 String db_title = cursor.getString(2);
 
-                MacroI macro =  MacroFactory.createMacro(context, db_id, db_title, kalender);
+                MacroI macro =  MacroFactory.loadMacro(context, db_id, db_title, kalender);
 
                 // Adding contact to list
                 macros.add(macro);
