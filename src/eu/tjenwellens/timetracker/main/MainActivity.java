@@ -55,7 +55,8 @@ public class MainActivity extends Activity implements ActiviteitHandler
 //        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
         for (ActiviteitPanel ap : an) {
 //            dbh.addActiviteit(ap);
-            ap.deleteDBActiviteit(this);
+            ap.updateDBActiviteit(this);
+//            ap.deleteDBActiviteit(this);
             removeActiviteit(ap);
         }
     }

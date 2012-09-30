@@ -46,13 +46,18 @@ public class ActiviteitFactory
         a.saveDBActiviteit(context);
         return a;
     }
-
-    public static ActiviteitI createActiviteit(Context context, int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
+    
+    public static ActiviteitI loadActiviteit(Context context, int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
     {
-        Activiteit a = new Activiteit(id, kalender, title, startTimeMillis, endTimeMillis, description);
-        a.saveDBActiviteit(context);
-        return a;
+        return new Activiteit(id, kalender, title, startTimeMillis, endTimeMillis, description);
     }
+
+//    public static ActiviteitI createActiviteit(Context context, int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
+//    {
+//        Activiteit a = new Activiteit(id, kalender, title, startTimeMillis, endTimeMillis, description);
+//        a.saveDBActiviteit(context);
+//        return a;
+//    }
 
     public static ActiviteitI createActiviteit(Context context)
     {

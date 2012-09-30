@@ -134,7 +134,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
         long db_stop = Long.parseLong(cursor.getString(4));
         String db_description = cursor.getString(5);
 
-        ActiviteitI activiteit = ActiviteitFactory.createActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
+        ActiviteitI activiteit = ActiviteitFactory.loadActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
         // return contact
         return activiteit;
     }
@@ -167,7 +167,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
                 long db_stop = Long.parseLong(cursor.getString(4));
                 String db_description = cursor.getString(5);
 
-                ActiviteitI activiteit = ActiviteitFactory.createActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
+                ActiviteitI activiteit = ActiviteitFactory.loadActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
 
                 // Adding contact to list
                 contactList.add(activiteit);
