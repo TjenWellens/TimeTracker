@@ -8,12 +8,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.*;
+import android.widget.AdapterView.OnItemSelectedListener;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
-import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.macro.MacroActivity;
 import eu.tjenwellens.timetracker.macro.MacroFactory;
 import eu.tjenwellens.timetracker.macro.MacroI;
@@ -76,8 +75,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     
     private void removeDBMacro(MacroI macro)
     {
-        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        dbh.deleteMacro(macro);
+        macro.deleteDBMacro(this);
     }
 
     private void initMacroSettingsGUI(List<MacroI> macros)
