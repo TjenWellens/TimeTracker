@@ -34,14 +34,14 @@ public class MacroActivity extends Activity implements MacroHandler
     {
         super.onCreate(savedInstanceState);
         // GUI
-        initMacroGUI(loadMacros());
+        initMacroGUI(loadDBMacros(this));
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-        saveMacros();
+        saveMacros(this, macroButtonPanel.getMacros());
     }
 
     private void initMacros(List<MacroI> macros)
@@ -66,22 +66,22 @@ public class MacroActivity extends Activity implements MacroHandler
         initMacros(macros);
     }
 
-    private List<MacroI> loadMacros()
+    public static List<MacroI> loadDBMacros(Context context)
     {
         // load macros
-        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
+        DatabaseHandler dbh = DatabaseHandler.getInstance(context);
         List<MacroI> macros = dbh.getAllMacros();
 //        dbh.clearMacros();
         return macros;
     }
 
-    private void saveMacros()
+    public static void saveMacros(Context context, List<MacroI> macros)
     {
         // save macros
 //        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        for (MacroI macro : macroButtonPanel.getMacros())
+        for (MacroI macro : macros)
         {
-            macro.updateDBMacro(this);
+            macro.updateDBMacro(context);
 //            dbh.addMacro(macro);
         }
     }
@@ -106,7 +106,8 @@ public class MacroActivity extends Activity implements MacroHandler
     public void btnMacroAdd(View button)
     {
         Intent i = new Intent(this, MacroSettingsActivity.class);
-        macrosToIntent(i, macroButtonPanel.getMacros(), ActivityResults.KEY_MACRO_SETTINGS);
+        saveMacros(this, macroButtonPanel.getMacros());
+//        macrosToIntent(i, macroButtonPanel.getMacros(), ActivityResults.KEY_MACRO_SETTINGS);
         startActivityForResult(i, ActivityResults.MACRO_DETAILS_START);
     }
 
@@ -116,7 +117,7 @@ public class MacroActivity extends Activity implements MacroHandler
         if (resultCode == Activity.RESULT_OK && requestCode == ActivityResults.MACRO_DETAILS_START)
         {
             resetMacros();
-            initMacroGUI(loadMacros());
+            initMacroGUI(loadDBMacros(this));
 //            resetMacros();
 //            List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
 //            initMacros(macros);

@@ -53,7 +53,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        List<MacroI> macros = MacroActivity.intentToMacros(this, getIntent(), ActivityResults.KEY_MACRO_SETTINGS);
+//        List<MacroI> macros = MacroActivity.intentToMacros(this, getIntent(), ActivityResults.KEY_MACRO_SETTINGS);
+        List<MacroI> macros = MacroActivity.loadDBMacros(this);
         // GUI
         initMacroSettingsGUI(macros);
     }
@@ -125,7 +126,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     public void btnMacroSettingsSave(View button)
     {
         Intent i = new Intent();
-        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
+//        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
+        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
         setResult(RESULT_OK, i);
         finish();
     }
