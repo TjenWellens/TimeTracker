@@ -16,7 +16,6 @@ import java.util.List;
 public class DatabaseHandler extends SQLiteOpenHelper
 {
     // singleton
-
     private static DatabaseHandler dbh;
     // All Static variables
     // Database Version
@@ -60,7 +59,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
     public static DatabaseHandler getInstance(Context context)
     {
-        if (dbh == null || dbh.context != context) {
+        if (dbh == null || dbh.context != context)
+        {
             dbh = new DatabaseHandler(context);
         }
         return dbh;
@@ -114,15 +114,22 @@ public class DatabaseHandler extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
 
         String table = TABLE_ACTIVITEITEN;
-        String[] columns = new String[]{KEY_ID, KEY_KAL_NAME, KEY_TITLE, KEY_START_MILLIS, KEY_STOP_MILLIS, KEY_DETAILS};
+        String[] columns = new String[]
+        {
+            KEY_ID, KEY_KAL_NAME, KEY_TITLE, KEY_START_MILLIS, KEY_STOP_MILLIS, KEY_DETAILS
+        };
         String selection = KEY_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(id)};
+        String[] selectionArgs = new String[]
+        {
+            String.valueOf(id)
+        };
         String groupBy = null;
         String having = null;
         String orderBy = null;
         String limit = null;
         Cursor cursor = db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-        if (cursor != null) {
+        if (cursor != null)
+        {
             cursor.moveToFirst();
         }
 
@@ -133,6 +140,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
         long db_start = Long.parseLong(cursor.getString(3));
         long db_stop = Long.parseLong(cursor.getString(4));
         String db_description = cursor.getString(5);
+        cursor.close();
+        db.close();
 
         ActiviteitI activiteit = ActiviteitFactory.loadActiviteit(context, db_id, kalender, db_title, db_start, db_stop, db_description);
         // return contact
@@ -141,7 +150,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
     public void addAllActiviteiten(List<ActiviteitI> activiteiten)
     {
-        for (ActiviteitI activiteit : activiteiten) {
+        for (ActiviteitI activiteit : activiteiten)
+        {
             addActiviteit(activiteit);
         }
     }
@@ -157,8 +167,10 @@ public class DatabaseHandler extends SQLiteOpenHelper
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
+        if (cursor.moveToFirst())
+        {
+            do
+            {
                 int db_id = Integer.parseInt(cursor.getString(0));
                 String db_kalendar_name = cursor.getString(1);
                 Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
@@ -173,6 +185,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
                 contactList.add(activiteit);
             } while (cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
 
         // return contact list
         return contactList;
@@ -190,10 +204,14 @@ public class DatabaseHandler extends SQLiteOpenHelper
         values.put(KEY_START_MILLIS, activiteit.getBeginMillis()); // begin
         values.put(KEY_STOP_MILLIS, activiteit.getEndMillis()); // end
         values.put(KEY_DETAILS, activiteit.getDescription()); // description
-
+        int result = db.update(TABLE_ACTIVITEITEN, values, KEY_ID + " = ?",
+                new String[]
+                {
+                    String.valueOf(activiteit.getActiviteitId())
+                });
+        db.close();
         // updating row
-        return db.update(TABLE_ACTIVITEITEN, values, KEY_ID + " = ?",
-                new String[]{String.valueOf(activiteit.getActiviteitId())});
+        return result;
     }
 
     // Deleting single contact
@@ -201,7 +219,10 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ACTIVITEITEN, KEY_ID + " = ?",
-                new String[]{String.valueOf(activiteit.getActiviteitId())});
+                new String[]
+                {
+                    String.valueOf(activiteit.getActiviteitId())
+                });
         db.close();
     }
 
@@ -211,10 +232,11 @@ public class DatabaseHandler extends SQLiteOpenHelper
         String countQuery = "SELECT  * FROM " + TABLE_ACTIVITEITEN;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
         cursor.close();
 
         // return count
-        return cursor.getCount();
+        return count;
     }
 
     public void clearActiviteiten()
@@ -247,15 +269,20 @@ public class DatabaseHandler extends SQLiteOpenHelper
         values.put(KEY_ID, macro.getId()); // kalender
         values.put(KEY_KAL_NAME, macro.getKalenderName()); // kalender
         values.put(KEY_TITLE, macro.getActiviteitTitle());        // title
-
+        int result = db.update(TABLE_MACROS, values, KEY_ID + " = ?",
+                new String[]
+                {
+                    String.valueOf(macro.getId())
+                });
+        db.close();
         // updating row
-        return db.update(TABLE_MACROS, values, KEY_ID + " = ?",
-                new String[]{String.valueOf(macro.getId())});
+        return result;
     }
 
     public void addAllMacros(List<MacroI> macros)
     {
-        for (MacroI macro : macros) {
+        for (MacroI macro : macros)
+        {
             addMacro(macro);
         }
     }
@@ -272,7 +299,10 @@ public class DatabaseHandler extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_MACROS, KEY_ID + " = ?",
-                new String[]{String.valueOf(macro.getId())});
+                new String[]
+                {
+                    String.valueOf(macro.getId())
+                });
         db.close();
     }
 
@@ -286,20 +316,23 @@ public class DatabaseHandler extends SQLiteOpenHelper
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
+        if (cursor.moveToFirst())
+        {
+            do
+            {
                 int db_id = Integer.parseInt(cursor.getString(0));
                 String db_kalendar_name = cursor.getString(1);
                 Kalender kalender = Kalender.getKalenderByName(context, db_kalendar_name);
                 String db_title = cursor.getString(2);
 
-                MacroI macro =  MacroFactory.loadMacro(context, db_id, db_title, kalender);
+                MacroI macro = MacroFactory.loadMacro(context, db_id, db_title, kalender);
 
                 // Adding contact to list
                 macros.add(macro);
             } while (cursor.moveToNext());
         }
-
+        cursor.close();
+        db.close();
         // return contact list
         return macros;
     }

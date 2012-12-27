@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
-import eu.tjenwellens.timetracker.macro.MacroButtonPanel;
 import eu.tjenwellens.timetracker.macro.MacroI;
 
 /**

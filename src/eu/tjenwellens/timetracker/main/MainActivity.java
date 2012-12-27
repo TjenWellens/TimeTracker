@@ -27,7 +27,6 @@ import java.util.List;
  */
 public class MainActivity extends Activity implements ActiviteitHandler
 {
-
     private ActiviteitPanel currentActiviteit = null;
     private ArrayList<ActiviteitPanel> activiteiten = new ArrayList<ActiviteitPanel>();
 
@@ -53,7 +52,8 @@ public class MainActivity extends Activity implements ActiviteitHandler
         // save activiteiten
         List<ActiviteitPanel> an = new ArrayList<ActiviteitPanel>(activiteiten);
 //        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        for (ActiviteitPanel ap : an) {
+        for (ActiviteitPanel ap : an)
+        {
 //            dbh.addActiviteit(ap);
             ap.updateDBActiviteit(this);
 //            ap.deleteDBActiviteit(this);
@@ -71,7 +71,8 @@ public class MainActivity extends Activity implements ActiviteitHandler
     {
         // load activiteiten, remove activiteiten from database
         DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        for (ActiviteitI activiteit : dbh.getAllActiviteiten()) {
+        for (ActiviteitI activiteit : dbh.getAllActiviteiten())
+        {
             addActiviteit(new ActiviteitPanel(this, this, activiteit));
         }
 //        dbh.clearActiviteiten();
@@ -97,10 +98,12 @@ public class MainActivity extends Activity implements ActiviteitHandler
 
     public void radioButtonChecked(ActiviteitPanel a)
     {
-        for (ActiviteitPanel ap : activiteiten) {
+        for (ActiviteitPanel ap : activiteiten)
+        {
             ap.uncheckRadioButton();
         }
-        if (a != null) {
+        if (a != null)
+        {
             a.checkRadioButton();
             setORresetSelectionMade(a);
         }
@@ -115,14 +118,20 @@ public class MainActivity extends Activity implements ActiviteitHandler
 
     private void setORresetSelectionMade(ActiviteitPanel a)
     {
+        if (a == null && !activiteiten.isEmpty())
+        {
+            a = activiteiten.get(activiteiten.size() - 1);
+        }
         Button detail = (Button) findViewById(R.id.btnMainDetails);
         Button cancel = (Button) findViewById(R.id.btnMainDelete);
         Button resume = (Button) findViewById(R.id.btnMainResume);
-        if (a == null) {
+        if (a == null)
+        {
             detail.setEnabled(false);
             cancel.setEnabled(false);
             resume.setEnabled(false);
-        } else {
+        } else
+        {
             detail.setEnabled(true);
             cancel.setEnabled(true);
             resume.setEnabled(!a.isRunning());
@@ -134,11 +143,13 @@ public class MainActivity extends Activity implements ActiviteitHandler
     public void activiteitSave(ActiviteitPanel a)
     {
         // handle all UI except the Activiteitpanel
-        if (a.getKalenderName() == null) {
+        if (a.getKalenderName() == null)
+        {
             return;
         }
         Evenement e = a.getEvenement();
-        if (e == null) {
+        if (e == null)
+        {
             return;
         }
         Evenement.post(this, e);
@@ -154,7 +165,8 @@ public class MainActivity extends Activity implements ActiviteitHandler
 
     public void activiteitStop(ActiviteitPanel a)
     {
-        if (a == currentActiviteit) {
+        if (a == currentActiviteit)
+        {
             // update resume button
             setORresetSelectionMade(a);
         }
@@ -163,14 +175,16 @@ public class MainActivity extends Activity implements ActiviteitHandler
     private void removeActiviteit(ActiviteitPanel a)
     {
         // remove activiteit
-        if (activiteiten.remove(a)) {
+        if (activiteiten.remove(a))
+        {
             // stop -> GUI
             final ViewGroup activiteitContainer = ((ViewGroup) findViewById(R.id.pnlMainActiviteiten));
             activiteitContainer.removeView(a);
         }
 
         // reset selection
-        if (currentActiviteit == a) {
+        if (currentActiviteit == a)
+        {
             setORresetSelectionMade(null);
         }
     }
@@ -182,12 +196,14 @@ public class MainActivity extends Activity implements ActiviteitHandler
 
     public static void arrayToIntent(Intent intent, String[] array, String key)
     {
-        if (array == null) {
+        if (array == null)
+        {
             intent.putExtra(key + "_amount", 0);
             return;
         }
         intent.putExtra(key + "_amount", array.length);
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++)
+        {
             intent.putExtra(key + i, array[i]);
         }
     }
@@ -195,12 +211,14 @@ public class MainActivity extends Activity implements ActiviteitHandler
     public static String[] intentToArray(Intent intent, String key)
     {
         int amount = intent.getIntExtra(key + "_amount", -1);
-        if (amount <= 0) {
+        if (amount <= 0)
+        {
             // error
             return null;
         }
         String[] array = new String[amount];
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < amount; i++)
+        {
             array[i] = intent.getStringExtra(key + i);
         }
         return array;
@@ -223,19 +241,24 @@ public class MainActivity extends Activity implements ActiviteitHandler
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == ActivityResults.MACRO_START) {
+        if (resultCode == Activity.RESULT_OK)
+        {
+            if (requestCode == ActivityResults.MACRO_START)
+            {
                 // start the choosen macro
                 String title = data.getStringExtra(MacroActivity.MACRO_TITLE);
                 String calendar = data.getStringExtra(MacroActivity.MACRO_CALENDAR);
                 MacroI m = MacroFactory.createMacro(this, title, Kalender.getKalenderByName(this, calendar));
                 addActiviteit(new ActiviteitPanel(this, this, m));
-            } else if (requestCode == ActivityResults.DETAIL_START) {
+            } else if (requestCode == ActivityResults.DETAIL_START)
+            {
                 // update detail
                 String[] details = intentToArray(data, ActivityResults.KEY_ACTIVITEIT_DETAIL);
-                if (details != null) {
+                if (details != null)
+                {
                     this.currentActiviteit.setDescription(details);
-                } else {
+                } else
+                {
                     Toast.makeText(this, "updating activity failed", Toast.LENGTH_LONG).show();
                 }
             }
@@ -245,15 +268,18 @@ public class MainActivity extends Activity implements ActiviteitHandler
     public void btnMainDelete(View button)
     {// cancel selected activiteit
         ActiviteitPanel a = currentActiviteit;
-        if (a != null) {
+        if (a != null)
+        {
             removeActiviteit(a);
+            a.deleteDBActiviteit(this);
         }
     }
 
     public void btnMainResume(View button)
     {// resume selected activiteit
         ActiviteitI a = currentActiviteit;
-        if (a != null) {
+        if (a != null)
+        {
             a.resumeRunning();
             // update resume button
             setORresetSelectionMade(currentActiviteit);
@@ -267,12 +293,15 @@ public class MainActivity extends Activity implements ActiviteitHandler
 
     private boolean updateActivity(ActiviteitI a)
     {
-        if (a == null) {
+        if (a == null)
+        {
             return false;
         }
         int id = a.getActiviteitId();
-        for (ActiviteitPanel ap : activiteiten) {
-            if (ap.getActiviteitId() == id) {
+        for (ActiviteitPanel ap : activiteiten)
+        {
+            if (ap.getActiviteitId() == id)
+            {
                 ap.updateActiviteit(a);
                 return true;
             }

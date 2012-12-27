@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class MacroActivity extends Activity implements MacroHandler
 {
-
     public static int MACRO_START = 659244;
     public static String MACRO_TITLE = "macro_title";
     public static String MACRO_CALENDAR = "macro_calendar";
@@ -49,7 +48,7 @@ public class MacroActivity extends Activity implements MacroHandler
     {
         macroButtonPanel.addAllButtons(macros);
     }
-    
+
     private void resetMacros()
     {
         macroButtonPanel.reset();
@@ -59,7 +58,8 @@ public class MacroActivity extends Activity implements MacroHandler
     {
         setContentView(R.layout.macro);
         final LinearLayout macroContainer = (LinearLayout) findViewById(R.id.pnlMacro);
-        if (macroButtonPanel == null) {
+        if (macroButtonPanel == null)
+        {
             macroButtonPanel = new MacroButtonPanel(this, this);
             macroContainer.addView(macroButtonPanel);
         }
@@ -79,7 +79,8 @@ public class MacroActivity extends Activity implements MacroHandler
     {
         // save macros
 //        DatabaseHandler dbh = DatabaseHandler.getInstance(this);
-        for (MacroI macro : macroButtonPanel.getMacros()) {
+        for (MacroI macro : macroButtonPanel.getMacros())
+        {
             macro.updateDBMacro(this);
 //            dbh.addMacro(macro);
         }
@@ -112,21 +113,26 @@ public class MacroActivity extends Activity implements MacroHandler
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (resultCode == Activity.RESULT_OK && requestCode == ActivityResults.MACRO_DETAILS_START) {
+        if (resultCode == Activity.RESULT_OK && requestCode == ActivityResults.MACRO_DETAILS_START)
+        {
             resetMacros();
-            List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
-            initMacros(macros);
+            initMacroGUI(loadMacros());
+//            resetMacros();
+//            List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
+//            initMacros(macros);
         }
     }
 
     public static void macrosToIntent(Intent intent, List<MacroI> macros, String key)
     {
-        if (macros == null) {
+        if (macros == null)
+        {
             intent.putExtra(key + "_amount", 0);
             return;
         }
         intent.putExtra(key + "_amount", macros.size());
-        for (int i = 0; i < macros.size(); i++) {
+        for (int i = 0; i < macros.size(); i++)
+        {
             intent.putExtra(key + "title" + i, macros.get(i).getActiviteitTitle());
             intent.putExtra(key + "kalender" + i, macros.get(i).getKalenderName());
         }
@@ -135,12 +141,14 @@ public class MacroActivity extends Activity implements MacroHandler
     public static List<MacroI> intentToMacros(Context context, Intent intent, String key)
     {
         int amount = intent.getIntExtra(key + "_amount", -1);
-        if (amount <= 0) {
+        if (amount <= 0)
+        {
             // error
             return null;
         }
         List<MacroI> macros = new ArrayList<MacroI>(amount);
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < amount; i++)
+        {
             String title = intent.getStringExtra(key + "title" + i);
             Kalender k = Kalender.getKalenderByName(context, intent.getStringExtra(key + "kalender" + i));
             macros.add(MacroFactory.createMacro(context, title, k));

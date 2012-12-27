@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
+import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.macro.MacroActivity;
 import eu.tjenwellens.timetracker.macro.MacroFactory;
 import eu.tjenwellens.timetracker.macro.MacroI;
@@ -25,18 +26,18 @@ import java.util.List;
  */
 public class MacroSettingsActivity extends Activity implements MacroSettingsHandler
 {
-
     private List<MacroSettingsPanel> macroPanels = new ArrayList<MacroSettingsPanel>();
     private Kalender selectedKalender;
     private OnItemSelectedListener spinnerListener = new OnItemSelectedListener()
     {
-
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
         {
             Object selected = parent.getItemAtPosition(pos);
-            if (selected instanceof Kalender) {
+            if (selected instanceof Kalender)
+            {
                 selectedKalender = (Kalender) selected;
-            } else {
+            } else
+            {
                 Toast.makeText(MacroSettingsActivity.this, "Failed to recognize  calender", Toast.LENGTH_LONG).show();
             }
         }
@@ -70,12 +71,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
         macroSettingsContainer.removeView(m);
         macroPanels.remove(m);
-        removeDBMacro(m);
-    }
-    
-    private void removeDBMacro(MacroI macro)
-    {
-        macro.deleteDBMacro(this);
+        m.deleteDBMacro(this);
     }
 
     private void initMacroSettingsGUI(List<MacroI> macros)
@@ -90,7 +86,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
         macroSettingsContainer.removeAllViews();
         macroPanels.clear();
-        if (macros == null) {
+        if (macros == null)
+        {
             return;
         }
         addAllMacros(macros);
@@ -98,7 +95,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
 
     private void addAllMacros(List<MacroI> macros)
     {
-        for (MacroI macro : macros) {
+        for (MacroI macro : macros)
+        {
             addMacro(macro);
         }
     }
@@ -106,7 +104,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     private void initSpinner()
     {
         Kalender[] kalenders = Kalender.retrieveKalenders(this);
-        if (kalenders == null) {
+        if (kalenders == null)
+        {
             Toast.makeText(this, "Error initializing calendars", Toast.LENGTH_LONG).show();
             return;
         }
@@ -157,5 +156,10 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     public void deleteMacro(MacroSettingsPanel macroSettingsPanel)
     {
         removeMacro(macroSettingsPanel);
+    }
+
+    public void updateMacro(MacroI macro)
+    {
+        DatabaseHandler.getInstance(this).updateMacro(macro);
     }
 }
