@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
@@ -28,7 +29,7 @@ public class MacroActivity extends Activity implements MacroHandler
     public static String MACRO_TITLE = "macro_title";
     public static String MACRO_CALENDAR = "macro_calendar";
     private MacroButtonPanel macroButtonPanel;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -36,22 +37,29 @@ public class MacroActivity extends Activity implements MacroHandler
         // GUI
         initMacroGUI(loadDBMacros(this));
     }
-
+    
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
         saveMacros(this, macroButtonPanel.getMacros());
     }
-
+    
     private void initMacros(List<MacroI> macros)
     {
         macroButtonPanel.addAllButtons(macros);
     }
-
-    private void resetMacros()
+    
+    private void reloadMacros()
     {
-        macroButtonPanel.reset();
+        if (macroButtonPanel != null)
+        {
+            macroButtonPanel.reset();
+            final LinearLayout macroContainer = (LinearLayout) findViewById(R.id.pnlMacro);
+            macroContainer.removeAllViews();
+            macroButtonPanel = null;
+        }
+        initMacroGUI(loadDBMacros(this));
     }
 
     private void initMacroGUI(List<MacroI> macros)
@@ -65,7 +73,7 @@ public class MacroActivity extends Activity implements MacroHandler
         }
         initMacros(macros);
     }
-
+    
     public static List<MacroI> loadDBMacros(Context context)
     {
         // load macros
@@ -74,7 +82,7 @@ public class MacroActivity extends Activity implements MacroHandler
 //        dbh.clearMacros();
         return macros;
     }
-
+    
     public static void saveMacros(Context context, List<MacroI> macros)
     {
         // save macros
@@ -85,7 +93,7 @@ public class MacroActivity extends Activity implements MacroHandler
 //            dbh.addMacro(macro);
         }
     }
-
+    
     @Override
     public void startActiviteit(MacroI macro)
     {
@@ -95,14 +103,14 @@ public class MacroActivity extends Activity implements MacroHandler
         setResult(RESULT_OK, returnIntent);
         finish();
     }
-
+    
     public void btnMacroBack(View button)
     {
         Intent returnIntent = new Intent();
         setResult(RESULT_CANCELED, returnIntent);
         finish();
     }
-
+    
     public void btnMacroAdd(View button)
     {
         Intent i = new Intent(this, MacroSettingsActivity.class);
@@ -110,50 +118,63 @@ public class MacroActivity extends Activity implements MacroHandler
 //        macrosToIntent(i, macroButtonPanel.getMacros(), ActivityResults.KEY_MACRO_SETTINGS);
         startActivityForResult(i, ActivityResults.MACRO_DETAILS_START);
     }
-
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (resultCode == Activity.RESULT_OK && requestCode == ActivityResults.MACRO_DETAILS_START)
         {
-            resetMacros();
-            initMacroGUI(loadDBMacros(this));
+            
+            reloadMacros();
+//            if (macros == null)
+//            {
+//                Toast.makeText(this, "Activity result ok, macro's NULL !!!", Toast.LENGTH_LONG).show();
+//            } else
+//            {
+//                Toast.makeText(this, "Activity result ok, macro's not null, length: " + macros.size(), Toast.LENGTH_LONG).show();
+//            }
+//            initMacroGUI(macros);
 //            resetMacros();
 //            List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
 //            initMacros(macros);
+        } else if (resultCode == Activity.RESULT_CANCELED)
+        {
+            Toast.makeText(this, "Activity cancelled ", Toast.LENGTH_LONG).show();
+        } else
+        {
+            Toast.makeText(this, "ERROR wrong resultcode", Toast.LENGTH_LONG).show();
         }
     }
-
-    public static void macrosToIntent(Intent intent, List<MacroI> macros, String key)
-    {
-        if (macros == null)
-        {
-            intent.putExtra(key + "_amount", 0);
-            return;
-        }
-        intent.putExtra(key + "_amount", macros.size());
-        for (int i = 0; i < macros.size(); i++)
-        {
-            intent.putExtra(key + "title" + i, macros.get(i).getActiviteitTitle());
-            intent.putExtra(key + "kalender" + i, macros.get(i).getKalenderName());
-        }
-    }
-
-    public static List<MacroI> intentToMacros(Context context, Intent intent, String key)
-    {
-        int amount = intent.getIntExtra(key + "_amount", -1);
-        if (amount <= 0)
-        {
-            // error
-            return null;
-        }
-        List<MacroI> macros = new ArrayList<MacroI>(amount);
-        for (int i = 0; i < amount; i++)
-        {
-            String title = intent.getStringExtra(key + "title" + i);
-            Kalender k = Kalender.getKalenderByName(context, intent.getStringExtra(key + "kalender" + i));
-            macros.add(MacroFactory.createMacro(context, title, k));
-        }
-        return macros;
-    }
+//    public static void macrosToIntent(Intent intent, List<MacroI> macros, String key)
+//    {
+//        if (macros == null)
+//        {
+//            intent.putExtra(key + "_amount", 0);
+//            return;
+//        }
+//        intent.putExtra(key + "_amount", macros.size());
+//        for (int i = 0; i < macros.size(); i++)
+//        {
+//            intent.putExtra(key + "title" + i, macros.get(i).getActiviteitTitle());
+//            intent.putExtra(key + "kalender" + i, macros.get(i).getKalenderName());
+//        }
+//    }
+//
+//    public static List<MacroI> intentToMacros(Context context, Intent intent, String key)
+//    {
+//        int amount = intent.getIntExtra(key + "_amount", -1);
+//        if (amount <= 0)
+//        {
+//            // error
+//            return null;
+//        }
+//        List<MacroI> macros = new ArrayList<MacroI>(amount);
+//        for (int i = 0; i < amount; i++)
+//        {
+//            String title = intent.getStringExtra(key + "title" + i);
+//            Kalender k = Kalender.getKalenderByName(context, intent.getStringExtra(key + "kalender" + i));
+//            macros.add(MacroFactory.createMacro(context, title, k));
+//        }
+//        return macros;
+//    }
 }

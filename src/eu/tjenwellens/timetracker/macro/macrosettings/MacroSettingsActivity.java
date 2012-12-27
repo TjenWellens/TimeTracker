@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
@@ -48,15 +47,44 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
             Toast.makeText(MacroSettingsActivity.this, "No selection made", Toast.LENGTH_LONG).show();
         }
     };
+    // save when shutdown improper
+    private boolean saveOnExit = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 //        List<MacroI> macros = MacroActivity.intentToMacros(this, getIntent(), ActivityResults.KEY_MACRO_SETTINGS);
-        List<MacroI> macros = MacroActivity.loadDBMacros(this);
+//        List<MacroI> macros = MacroActivity.loadDBMacros(this);
         // GUI
-        initMacroSettingsGUI(macros);
+        initMacroSettingsGUI(MacroActivity.loadDBMacros(this));
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (saveOnExit)
+        {
+            save();
+        }
+    }
+
+    private void exit(boolean save)
+    {
+        if (save)
+        {
+            save();
+        }
+        this.saveOnExit = false;
+        finish();
+    }
+
+    private void save()
+    {
+        Toast.makeText(this, "SAVE", Toast.LENGTH_SHORT).show();
+        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
+        setResult(RESULT_OK, new Intent());
     }
 
     private void addMacro(MacroI m)
@@ -125,18 +153,26 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
 
     public void btnMacroSettingsSave(View button)
     {
-        Intent i = new Intent();
-//        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
-        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
-        setResult(RESULT_OK, i);
-        finish();
+//        Intent i = new Intent();
+////        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
+//        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
+//        setResult(RESULT_OK, i);
+        exit(true);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        // save when backing
+        exit(true);
+//        super.onBackPressed();
     }
 
     public void btnMacroSettingsCancel(View button)
     {
         // dont save macro's
         setResult(RESULT_CANCELED, new Intent());
-        finish();
+        exit(false);
     }
 
     public void btnMacroSettingsClear(View button)
