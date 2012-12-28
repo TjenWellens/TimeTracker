@@ -7,6 +7,8 @@ package eu.tjenwellens.timetracker.detail.detailsettings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import eu.tjenwellens.timetracker.ActivityResults;
@@ -20,7 +22,6 @@ import eu.tjenwellens.timetracker.main.MainActivity;
  */
 public class DetailSettingsActivity extends Activity
 {
-
     private String detailString;
 
     @Override
@@ -40,7 +41,8 @@ public class DetailSettingsActivity extends Activity
 
     private void initDetails(String[] detail)
     {
-        if (detail == null) {
+        if (detail == null)
+        {
             return;
         }
         final EditText txtDetail = (EditText) findViewById(R.id.txtDetailSettingsDetail);
@@ -50,12 +52,15 @@ public class DetailSettingsActivity extends Activity
 
     public void btnDetailSettingsCancel(View button)
     {
-        Intent returnIntent = new Intent();
-        setResult(RESULT_CANCELED, returnIntent);
-        finish();
+        launchCancel();
     }
 
     public void btnDetailSettingsSave(View button)
+    {
+        launchSave();
+    }
+
+    private void launchSave()
     {
         final EditText txtDetail = (EditText) findViewById(R.id.txtDetailSettingsDetail);
         detailString = txtDetail.getText().toString();
@@ -63,5 +68,43 @@ public class DetailSettingsActivity extends Activity
         MainActivity.arrayToIntent(returnIntent, ActiviteitFactory.splitDetailToEntries(detailString), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
         setResult(RESULT_OK, returnIntent);
         finish();
+    }
+
+    private void launchCancel()
+    {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    // Initiating Menu XML file (menu.xml)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.detail_settings_menu, menu);
+        return true;
+    }
+
+    /**
+     * Event Handling for Individual menu item selected Identify single menu
+     * item by it's id
+     *
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
+        {
+            case R.id.menu_save:
+                launchSave();
+                return true;
+            case R.id.menu_cancel:
+                launchCancel();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -5,19 +5,25 @@
     <string name="app_title">TimeTracker</string>
     <string name="title_time_tracker_activity">TimeTracker</string>
     
-    <string name="rightCancel">Cancel &gt;&gt;</string>
-    <string name="rightSave">Save >></string>
-    <string name="rightMacros">Macros >></string>
-    <string name="rightAdd">Add &gt;&gt;</string>
-    <string name="rightEdit">Edit &gt;&gt;</string>
-    
     <string name="time">Time</string>
     <string name="clear">Clear</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>
     <string name="resume">Resume</string>
-    <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    
+    <string name="details">Details</string>
+    <string name="macros">Macros</string>
+    <string name="back">Back</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    
+    <string name="rightCancel">Cancel &gt;&gt;</string>
+    <string name="rightSave">Save >></string>
+    <string name="rightMacros">Macros >></string>
+    <string name="rightAdd">Add &gt;&gt;</string>
+    <string name="rightEdit">Edit &gt;&gt;</string>
     
     <string name="leftDetails">&lt;&lt; Details</string>
     <string name="leftBack">&lt;&lt; Back</string>
@@ -34,7 +40,6 @@
     <string name="lblStopTime">End: </string>
     
 <!--  softcoded  -->
-    <string name="save">Save</string>
     <string name="stop">Stop</string>
     <string name="none"></string>
     <string name="running">running</string>

@@ -8,15 +8,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
-import eu.tjenwellens.timetracker.calendar.Kalender;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.macro.macrosettings.MacroSettingsActivity;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +29,7 @@ public class MacroActivity extends Activity implements MacroHandler
     public static String MACRO_TITLE = "macro_title";
     public static String MACRO_CALENDAR = "macro_calendar";
     private MacroButtonPanel macroButtonPanel;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -37,19 +37,19 @@ public class MacroActivity extends Activity implements MacroHandler
         // GUI
         initMacroGUI(loadDBMacros(this));
     }
-    
+
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
         saveMacros(this, macroButtonPanel.getMacros());
     }
-    
+
     private void initMacros(List<MacroI> macros)
     {
         macroButtonPanel.addAllButtons(macros);
     }
-    
+
     private void reloadMacros()
     {
         if (macroButtonPanel != null)
@@ -73,7 +73,7 @@ public class MacroActivity extends Activity implements MacroHandler
         }
         initMacros(macros);
     }
-    
+
     public static List<MacroI> loadDBMacros(Context context)
     {
         // load macros
@@ -82,7 +82,7 @@ public class MacroActivity extends Activity implements MacroHandler
 //        dbh.clearMacros();
         return macros;
     }
-    
+
     public static void saveMacros(Context context, List<MacroI> macros)
     {
         // save macros
@@ -93,7 +93,7 @@ public class MacroActivity extends Activity implements MacroHandler
 //            dbh.addMacro(macro);
         }
     }
-    
+
     @Override
     public void startActiviteit(MacroI macro)
     {
@@ -103,28 +103,13 @@ public class MacroActivity extends Activity implements MacroHandler
         setResult(RESULT_OK, returnIntent);
         finish();
     }
-    
-    public void btnMacroBack(View button)
-    {
-        Intent returnIntent = new Intent();
-        setResult(RESULT_CANCELED, returnIntent);
-        finish();
-    }
-    
-    public void btnMacroAdd(View button)
-    {
-        Intent i = new Intent(this, MacroSettingsActivity.class);
-        saveMacros(this, macroButtonPanel.getMacros());
-//        macrosToIntent(i, macroButtonPanel.getMacros(), ActivityResults.KEY_MACRO_SETTINGS);
-        startActivityForResult(i, ActivityResults.MACRO_DETAILS_START);
-    }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (resultCode == Activity.RESULT_OK && requestCode == ActivityResults.MACRO_DETAILS_START)
         {
-            
+
             reloadMacros();
 //            if (macros == null)
 //            {
@@ -137,12 +122,69 @@ public class MacroActivity extends Activity implements MacroHandler
 //            resetMacros();
 //            List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
 //            initMacros(macros);
-        } else if (resultCode == Activity.RESULT_CANCELED)
+        } 
+//        else if (resultCode == Activity.RESULT_CANCELED)
+//        {
+//            Toast.makeText(this, "Activity cancelled ", Toast.LENGTH_LONG).show();
+//        } else
+//        {
+//            Toast.makeText(this, "ERROR wrong resultcode", Toast.LENGTH_LONG).show();
+//        }
+    }
+
+    public void btnMacroBack(View button)
+    {
+        launchCancel();
+    }
+
+    public void btnMacroAdd(View button)
+    {
+        launchMacroSettings();
+    }
+
+    private void launchCancel()
+    {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    private void launchMacroSettings()
+    {
+        Intent i = new Intent(this, MacroSettingsActivity.class);
+        saveMacros(this, macroButtonPanel.getMacros());
+//        macrosToIntent(i, macroButtonPanel.getMacros(), ActivityResults.KEY_MACRO_SETTINGS);
+        startActivityForResult(i, ActivityResults.MACRO_DETAILS_START);
+    }
+
+    // Initiating Menu XML file (menu.xml)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.macro_menu, menu);
+        return true;
+    }
+
+    /**
+     * Event Handling for Individual menu item selected Identify single menu
+     * item by it's id
+     *
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
         {
-            Toast.makeText(this, "Activity cancelled ", Toast.LENGTH_LONG).show();
-        } else
-        {
-            Toast.makeText(this, "ERROR wrong resultcode", Toast.LENGTH_LONG).show();
+            case R.id.menu_edit:
+                launchMacroSettings();
+                return true;
+            case R.id.menu_cancel:
+                launchCancel();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 //    public static void macrosToIntent(Intent intent, List<MacroI> macros, String key)

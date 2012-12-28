@@ -7,6 +7,8 @@ package eu.tjenwellens.timetracker.macro.macrosettings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -151,15 +153,6 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         spinner.setAdapter(adapter);
     }
 
-    public void btnMacroSettingsSave(View button)
-    {
-//        Intent i = new Intent();
-////        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
-//        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
-//        setResult(RESULT_OK, i);
-        exit(true);
-    }
-
     @Override
     public void onBackPressed()
     {
@@ -168,11 +161,14 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
 //        super.onBackPressed();
     }
 
-    public void btnMacroSettingsCancel(View button)
+    public void deleteMacro(MacroSettingsPanel macroSettingsPanel)
     {
-        // dont save macro's
-        setResult(RESULT_CANCELED, new Intent());
-        exit(false);
+        removeMacro(macroSettingsPanel);
+    }
+
+    public void updateMacro(MacroI macro)
+    {
+        DatabaseHandler.getInstance(this).updateMacro(macro);
     }
 
     public void btnMacroSettingsClear(View button)
@@ -191,13 +187,60 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         txtTitle.setText(R.string.none);
     }
 
-    public void deleteMacro(MacroSettingsPanel macroSettingsPanel)
+    public void btnMacroSettingsSave(View button)
     {
-        removeMacro(macroSettingsPanel);
+//        Intent i = new Intent();
+////        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
+//        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
+//        setResult(RESULT_OK, i);
+        launchSave();
     }
 
-    public void updateMacro(MacroI macro)
+    public void btnMacroSettingsCancel(View button)
     {
-        DatabaseHandler.getInstance(this).updateMacro(macro);
+        launchCancel();
+    }
+
+    private void launchSave()
+    {
+        exit(true);
+    }
+
+    private void launchCancel()
+    {
+        // dont save macro's
+        setResult(RESULT_CANCELED, new Intent());
+        exit(false);
+    }
+
+    // Initiating Menu XML file (menu.xml)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.macro_settings_menu, menu);
+        return true;
+    }
+
+    /**
+     * Event Handling for Individual menu item selected Identify single menu
+     * item by it's id
+     *
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
+        {
+            case R.id.menu_save:
+                launchSave();
+                return true;
+            case R.id.menu_cancel:
+                launchCancel();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

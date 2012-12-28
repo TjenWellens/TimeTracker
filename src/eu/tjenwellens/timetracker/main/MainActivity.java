@@ -5,6 +5,9 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -189,11 +192,6 @@ public class MainActivity extends Activity implements ActiviteitHandler
         }
     }
 
-    public void btnMainDetails(View button)
-    {
-        startDetail(currentActiviteit);
-    }
-
     public static void arrayToIntent(Intent intent, String[] array, String key)
     {
         if (array == null)
@@ -230,12 +228,6 @@ public class MainActivity extends Activity implements ActiviteitHandler
         Intent intent = new Intent(this, DetailActivity.class);
         arrayToIntent(intent, a.getDescriptionEntries(), ActivityResults.KEY_ACTIVITEIT_DETAIL);
         startActivityForResult(intent, ActivityResults.DETAIL_START);
-    }
-
-    public void btnMainMacros(View button)
-    {
-        Intent i = new Intent(this, MacroActivity.class);
-        startActivityForResult(i, ActivityResults.MACRO_START);
     }
 
     @Override
@@ -291,21 +283,76 @@ public class MainActivity extends Activity implements ActiviteitHandler
         addActiviteit(new ActiviteitPanel(this, this));
     }
 
-    private boolean updateActivity(ActiviteitI a)
+    public void btnMainMacros(View button)
     {
-        if (a == null)
-        {
-            return false;
-        }
-        int id = a.getActiviteitId();
-        for (ActiviteitPanel ap : activiteiten)
-        {
-            if (ap.getActiviteitId() == id)
-            {
-                ap.updateActiviteit(a);
-                return true;
-            }
-        }
-        return false;
+        launchMacros();
     }
+
+    private void launchMacros()
+    {
+        Intent i = new Intent(this, MacroActivity.class);
+        startActivityForResult(i, ActivityResults.MACRO_START);
+    }
+
+    private void launchDetails()
+    {
+        startDetail(currentActiviteit);
+    }
+
+    public void btnMainDetails(View button)
+    {
+        launchDetails();
+    }
+    // Initiating Menu XML file (menu.xml)
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
+     * Event Handling for Individual menu item selected Identify single menu
+     * item by it's id
+     *
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
+        {
+            case R.id.menu_details:
+                launchDetails();
+                return true;
+            case R.id.menu_settings:
+                // TODO: open settings
+                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.menu_macros:
+                launchMacros();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+//    private boolean updateActivity(ActiviteitI a)
+//    {
+//        if (a == null)
+//        {
+//            return false;
+//        }
+//        int id = a.getActiviteitId();
+//        for (ActiviteitPanel ap : activiteiten)
+//        {
+//            if (ap.getActiviteitId() == id)
+//            {
+//                ap.updateActiviteit(a);
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }

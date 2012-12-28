@@ -7,6 +7,8 @@ package eu.tjenwellens.timetracker.detail;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -26,7 +28,6 @@ import java.util.ArrayList;
 public class DetailActivity extends Activity implements DetailHandler
 {
     //
-
     private ArrayList<DetailPanel> currentDetails = new ArrayList<DetailPanel>();
     private String[] details;
 
@@ -52,7 +53,8 @@ public class DetailActivity extends Activity implements DetailHandler
 //        }
         // GUI
         initDetailGUI();
-        if (detail != null) {
+        if (detail != null)
+        {
             initDetails(detail);
         }
     }
@@ -66,32 +68,18 @@ public class DetailActivity extends Activity implements DetailHandler
     public void deleteDetail(DetailPanel dp)
     {
         final ViewGroup detailViewContainer = (ViewGroup) findViewById(R.id.pnlDetail);
-        if (currentDetails.remove(dp)) {
+        if (currentDetails.remove(dp))
+        {
             detailViewContainer.removeView(dp);
         }
         Toast.makeText(this, "Detail deleted", Toast.LENGTH_SHORT).show();
     }
 
-    public void btnDetailCancel(View button)
-    {
-        Intent returnIntent = new Intent();
-        setResult(RESULT_CANCELED, returnIntent);
-        finish();
-    }
-
-    public void btnDetailSave(View button)
-    {
-        details = detailsFromPanels();
-        Intent returnIntent = new Intent();
-        MainActivity.arrayToIntent(returnIntent, details, ActivityResults.KEY_ACTIVITEIT_DETAIL);
-        setResult(RESULT_OK, returnIntent);
-        finish();
-    }
-
     private String[] detailsFromPanels()
     {
         String[] test = new String[currentDetails.size()];
-        for (int i = 0; i < test.length; i++) {
+        for (int i = 0; i < test.length; i++)
+        {
             test[i] = currentDetails.get(i).getDetailText();
         }
         return test;
@@ -134,35 +122,105 @@ public class DetailActivity extends Activity implements DetailHandler
 
     private void initDetails(String[] s)
     {
-        if (s == null) {
+        if (s == null)
+        {
             return;
         }
         details = s;
-        for (String string : details) {
+        for (String string : details)
+        {
             addDetail(new DetailPanel(this, this, string));
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == ActivityResults.DETAIL_EDIT)
+        {
+            if (resultCode == Activity.RESULT_OK)
+            {
+                // update detail
+                String[] detail = MainActivity.intentToArray(data, ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
+                removeDetails();
+                initDetails(detail);
+                Toast.makeText(this, "Changes saved", Toast.LENGTH_LONG).show();
+            } else if (resultCode == Activity.RESULT_CANCELED)
+            {
+                Toast.makeText(this, "Changes cancelled", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     public void editDetail(DetailPanel dp)
+    {
+        launchEdit();
+    }
+
+    public void btnDetailCancel(View button)
+    {
+        launchCancel();
+    }
+
+    public void btnDetailSave(View button)
+    {
+        launchSave();
+    }
+
+    private void launchEdit()
     {
         Intent intent = new Intent(this, DetailSettingsActivity.class);
         MainActivity.arrayToIntent(intent, detailsFromPanels(), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
         startActivityForResult(intent, ActivityResults.DETAIL_EDIT);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    private void launchSave()
     {
-        if (requestCode == ActivityResults.DETAIL_EDIT) {
-            if (resultCode == Activity.RESULT_OK) {
-                // update detail
-                String[] detail = MainActivity.intentToArray(data, ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
-                removeDetails();
-                initDetails(detail);
-                Toast.makeText(this, "Changes saved", Toast.LENGTH_LONG).show();
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "Changes cancelled", Toast.LENGTH_SHORT).show();
-            }
+        details = detailsFromPanels();
+        Intent returnIntent = new Intent();
+        MainActivity.arrayToIntent(returnIntent, details, ActivityResults.KEY_ACTIVITEIT_DETAIL);
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
+
+    private void launchCancel()
+    {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    // Initiating Menu XML file (menu.xml)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    /**
+     * Event Handling for Individual menu item selected Identify single menu
+     * item by it's id
+     *
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+
+        switch (item.getItemId())
+        {
+            case R.id.menu_save:
+                launchSave();
+                return true;
+            case R.id.menu_cancel:
+                launchCancel();
+                return true;
+            case R.id.menu_edit:
+                launchEdit();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
