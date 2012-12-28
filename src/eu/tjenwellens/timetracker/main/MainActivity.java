@@ -5,12 +5,12 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
@@ -30,7 +30,8 @@ import java.util.List;
  */
 public class MainActivity extends Activity implements ActiviteitHandler
 {
-    private ActiviteitPanel currentActiviteit = null;
+//    private ActiviteitPanel currentActiviteit = null;
+    private ActiviteitPanel currentContextActiviteit = null;
     private ArrayList<ActiviteitPanel> activiteiten = new ArrayList<ActiviteitPanel>();
 
     @Override
@@ -60,7 +61,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
 //            dbh.addActiviteit(ap);
             ap.updateDBActiviteit(this);
 //            ap.deleteDBActiviteit(this);
-            removeActiviteit(ap);
+            removeActiviteitGUI(ap);
         }
     }
 
@@ -89,8 +90,9 @@ public class MainActivity extends Activity implements ActiviteitHandler
         final ViewGroup activiteitContainer = ((ViewGroup) findViewById(R.id.pnlMainActiviteiten));
         activiteitContainer.addView(a);
         // check the new radiobutton
-        radioButtonChecked(a);
-
+//        radioButtonChecked(a);
+        a.setLongClickable(true);
+        registerForContextMenu(a);
     }
 
     private void initMainGUI()
@@ -99,48 +101,47 @@ public class MainActivity extends Activity implements ActiviteitHandler
         initGUIButtons();
     }
 
-    public void radioButtonChecked(ActiviteitPanel a)
-    {
-        for (ActiviteitPanel ap : activiteiten)
-        {
-            ap.uncheckRadioButton();
-        }
-        if (a != null)
-        {
-            a.checkRadioButton();
-            setORresetSelectionMade(a);
-        }
-    }
-
+//    public void radioButtonChecked(ActiviteitPanel a)
+//    {
+//        for (ActiviteitPanel ap : activiteiten)
+//        {
+//            ap.uncheckRadioButton();
+//        }
+//        if (a != null)
+//        {
+//            a.checkRadioButton();
+//            setORresetSelectionMade(a);
+//        }
+//    }
     private void initGUIButtons()
     {
-        Button details = (Button) findViewById(R.id.btnMainDetails);
-        details.setEnabled(false);
-        setORresetSelectionMade(currentActiviteit);
+//        Button details = (Button) findViewById(R.id.btnMainDetails);
+//        details.setEnabled(false);
+//        setORresetSelectionMade(currentActiviteit);
     }
 
-    private void setORresetSelectionMade(ActiviteitPanel a)
-    {
-        if (a == null && !activiteiten.isEmpty())
-        {
-            a = activiteiten.get(activiteiten.size() - 1);
-        }
-        Button detail = (Button) findViewById(R.id.btnMainDetails);
-        Button cancel = (Button) findViewById(R.id.btnMainDelete);
-        Button resume = (Button) findViewById(R.id.btnMainResume);
-        if (a == null)
-        {
-            detail.setEnabled(false);
-            cancel.setEnabled(false);
-            resume.setEnabled(false);
-        } else
-        {
-            detail.setEnabled(true);
-            cancel.setEnabled(true);
-            resume.setEnabled(!a.isRunning());
-        }
-        currentActiviteit = a;
-    }
+//    private void updateCurrentActiviteit()
+//    {
+//        if (!activiteiten.isEmpty())
+//        {
+//            currentActiviteit = activiteiten.get(activiteiten.size() - 1);
+//        }
+////        Button detail = (Button) findViewById(R.id.btnMainDetails);
+////        Button cancel = (Button) findViewById(R.id.btnMainDelete);
+////        Button resume = (Button) findViewById(R.id.btnMainResume);
+////        if (a == null)
+////        {
+//////            detail.setEnabled(false);
+////            cancel.setEnabled(false);
+////            resume.setEnabled(false);
+////        } else
+////        {
+//////            detail.setEnabled(true);
+////            cancel.setEnabled(true);
+////            resume.setEnabled(!a.isRunning());
+////        }
+////        currentActiviteit = a;
+//    }
 
     @Override
     public void activiteitSave(ActiviteitPanel a)
@@ -156,7 +157,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
             return;
         }
         Evenement.post(this, e);
-        removeActiviteit(a);
+        removeActiviteitGUI(a);
     }
 
     @Override
@@ -166,16 +167,16 @@ public class MainActivity extends Activity implements ActiviteitHandler
         dialog.show();
     }
 
-    public void activiteitStop(ActiviteitPanel a)
-    {
-        if (a == currentActiviteit)
-        {
-            // update resume button
-            setORresetSelectionMade(a);
-        }
-    }
+//    public void activiteitStop(ActiviteitPanel a)
+//    {
+//        if (a == currentActiviteit)
+//        {
+//            // update resume button
+//            setORresetSelectionMade(a);
+//        }
+//    }
 
-    private void removeActiviteit(ActiviteitPanel a)
+    private void removeActiviteitGUI(ActiviteitPanel a)
     {
         // remove activiteit
         if (activiteiten.remove(a))
@@ -183,13 +184,15 @@ public class MainActivity extends Activity implements ActiviteitHandler
             // stop -> GUI
             final ViewGroup activiteitContainer = ((ViewGroup) findViewById(R.id.pnlMainActiviteiten));
             activiteitContainer.removeView(a);
+            unregisterForContextMenu(a);
+            a.setClickable(false);
         }
 
         // reset selection
-        if (currentActiviteit == a)
-        {
-            setORresetSelectionMade(null);
-        }
+//        if (currentActiviteit == a)
+//        {
+//            updateCurrentActiviteit();
+//        }
     }
 
     public static void arrayToIntent(Intent intent, String[] array, String key)
@@ -248,7 +251,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
                 String[] details = intentToArray(data, ActivityResults.KEY_ACTIVITEIT_DETAIL);
                 if (details != null)
                 {
-                    this.currentActiviteit.setDescription(details);
+                    this.currentContextActiviteit.setDescription(details);
                 } else
                 {
                     Toast.makeText(this, "updating activity failed", Toast.LENGTH_LONG).show();
@@ -257,36 +260,56 @@ public class MainActivity extends Activity implements ActiviteitHandler
         }
     }
 
-    public void btnMainDelete(View button)
-    {// cancel selected activiteit
-        ActiviteitPanel a = currentActiviteit;
+//    public void btnMainDelete(View button)
+//    {// cancel selected activiteit
+//        deleteActiviteit(currentActiviteit);
+//    }
+
+    /*
+     * removes activiteit completely if not null
+     * from GUI
+     * from Database
+     */
+    private void deleteActiviteit(ActiviteitPanel a)
+    {
         if (a != null)
         {
-            removeActiviteit(a);
+            removeActiviteitGUI(a);
             a.deleteDBActiviteit(this);
         }
     }
 
-    public void btnMainResume(View button)
-    {// resume selected activiteit
-        ActiviteitI a = currentActiviteit;
+    /*
+     * Resumes activiteit if not null
+     */
+    private void resumeActiviteit(ActiviteitPanel a)
+    {
         if (a != null)
         {
             a.resumeRunning();
-            // update resume button
-            setORresetSelectionMade(currentActiviteit);
         }
     }
+
+//    public void btnMainResume(View button)
+//    {
+//        // resume selected activiteit
+//        resumeActiviteit(currentActiviteit);
+////        if (currentActiviteit != null)
+////        {
+////            // update resume button
+//////            updateCurrentActiviteit(currentActiviteit);
+////        }
+//    }
 
     public void btnMainAdd(View button)
     {// start new activiteit
         addActiviteit(new ActiviteitPanel(this, this));
     }
-
-    public void btnMainMacros(View button)
-    {
-        launchMacros();
-    }
+//
+//    public void btnMainMacros(View button)
+//    {
+//        launchMacros();
+//    }
 
     private void launchMacros()
     {
@@ -294,16 +317,74 @@ public class MainActivity extends Activity implements ActiviteitHandler
         startActivityForResult(i, ActivityResults.MACRO_START);
     }
 
-    private void launchDetails()
+    private void launchDetail(ActiviteitI a)
     {
-        startDetail(currentActiviteit);
+        startDetail(a);
+    }
+//
+//    public void btnMainDetails(View button)
+//    {
+//        launchDetails();
+//    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
+    {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
     }
 
-    public void btnMainDetails(View button)
+    public void longClick(ActiviteitPanel a)
     {
-        launchDetails();
+        currentContextActiviteit = a;
+        // start context menu
+        openContextMenu(a);
     }
-    // Initiating Menu XML file (menu.xml)
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item)
+    {
+        if (currentContextActiviteit == null)
+        {
+            return super.onOptionsItemSelected(item);
+        }
+        switch (item.getItemId())
+        {
+            // Edit
+            case R.id.menu_edit:
+                Toast.makeText(this, "Edit " + currentContextActiviteit.getActiviteitTitle(), Toast.LENGTH_SHORT).show();
+                return true;
+
+            // Resume
+            case R.id.menu_resume:
+                resumeActiviteit(currentContextActiviteit);
+                return true;
+
+            // Details
+            case R.id.menu_details:
+                launchDetail(currentContextActiviteit);
+                return true;
+
+            // Delete
+            case R.id.menu_delete:
+                deleteActiviteit(currentContextActiviteit);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+//    
+//    // Initiating Menu XML file (menu.xml)
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu)
+//    {
+//        if (isFinalized)
+//        {
+//            menu.getItem(1).setEnabled(false);
+//        }
+//        return true;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -320,12 +401,12 @@ public class MainActivity extends Activity implements ActiviteitHandler
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-
         switch (item.getItemId())
         {
-            case R.id.menu_details:
-                launchDetails();
-                return true;
+            // TODO: remove details from main menu
+//            case R.id.menu_details:
+//                launchDetail(currentActiviteit);
+//                return true;
             case R.id.menu_settings:
                 // TODO: open settings
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();

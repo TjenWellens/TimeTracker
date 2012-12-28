@@ -15,8 +15,7 @@ import eu.tjenwellens.timetracker.macro.MacroI;
  */
 public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 {
-
-    private RadioButton radioButton;
+//    private RadioButton radioButton;
     private LinearLayout pnlText;
     private TextView tvName, tvCalendar, tvStartTime, tvDuration;
     private Button saveButton, stopButton;
@@ -55,28 +54,42 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         setLayoutParams(lp);
         setBackgroundColor(Color.LTGRAY);
         {
-            radioButton = new RadioButton(context);
-            radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-            {
-
-                public void onCheckedChanged(CompoundButton cb, boolean isChecked)
-                {
-                    if (isChecked && activiteitHandler != null) {
-                        activiteitHandler.radioButtonChecked(ActiviteitPanel.this);
-                    }
-                }
-            });
+//            radioButton = new RadioButton(context);
+//            radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+//            {
+//                public void onCheckedChanged(CompoundButton cb, boolean isChecked)
+//                {
+//                    if (isChecked && activiteitHandler != null)
+//                    {
+//                        activiteitHandler.radioButtonChecked(ActiviteitPanel.this);
+//                    }
+//                }
+//            });
             pnlText = new LinearLayout(context);
             pnlText.setOrientation(LinearLayout.VERTICAL);
             pnlText.setClickable(true);
             pnlText.setOnClickListener(new OnClickListener()
             {
-
                 public void onClick(View arg0)
                 {
-                    if (activiteitHandler != null) {
+                    if (activiteitHandler != null)
+                    {
                         activiteitHandler.activiteitEdit(ActiviteitPanel.this);
                     }
+                }
+            });
+            pnlText.setLongClickable(true);
+            pnlText.setOnLongClickListener(new OnLongClickListener()
+            {
+                public boolean onLongClick(View arg0)
+                {
+                    if (activiteitHandler != null)
+                    {
+                        activiteitHandler.longClick(ActiviteitPanel.this);
+//                        Toast.makeText((Context) activiteitHandler, "Long Click", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    return false;
                 }
             });
             {
@@ -104,27 +117,27 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
                 updateButtons();
                 saveButton.setOnClickListener(new OnClickListener()
                 {
-
                     public void onClick(View arg0)
                     {
-                        if (activiteitHandler != null && !isRunning()) {
+                        if (activiteitHandler != null && !isRunning())
+                        {
                             activiteitHandler.activiteitSave(ActiviteitPanel.this);
                         }
                     }
                 });
                 stopButton.setOnClickListener(new OnClickListener()
                 {
-
                     public void onClick(View arg0)
                     {
-                        if (stopRunning() && activiteitHandler != null) {
-                            activiteitHandler.activiteitStop(ActiviteitPanel.this);
+                        if (stopRunning() && activiteitHandler != null)
+                        {
+//                            activiteitHandler.activiteitStop(ActiviteitPanel.this);
                         }
                     }
                 });
             }
             //
-            this.addView(radioButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+//            this.addView(radioButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
             // bepaalt hoogte: 
             this.addView(pnlText, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 5f));
             this.addView(saveButton, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
@@ -134,7 +147,8 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 
     public boolean stopRunning()
     {
-        if (activiteit.stopRunning()) {
+        if (activiteit.stopRunning())
+        {
             // enable save, disable stop
 //            saveButton.setEnabled(true);
 //            stopButton.setEnabled(false);
@@ -147,7 +161,8 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
 
     public boolean resumeRunning()
     {
-        if (activiteit.resumeRunning()) {
+        if (activiteit.resumeRunning())
+        {
             // disable save, enable stop
 //            saveButton.setEnabled(false);
 //            stopButton.setEnabled(true);
@@ -264,16 +279,15 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
         tvDuration.setText(activiteit.getDuration());
     }
 
-    public void checkRadioButton()
-    {
-        radioButton.setChecked(true);
-    }
-
-    public void uncheckRadioButton()
-    {
-        radioButton.setChecked(false);
-    }
-
+//    public void checkRadioButton()
+//    {
+//        radioButton.setChecked(true);
+//    }
+//
+//    public void uncheckRadioButton()
+//    {
+//        radioButton.setChecked(false);
+//    }
     public void setDescription(String[] description)
     {
         activiteit.setDescription(description);

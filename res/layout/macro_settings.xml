@@ -5,7 +5,7 @@
               android:layout_height="fill_parent"
               android:orientation="vertical" >
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -25,7 +25,7 @@
             android:onClick="btnMacroSettingsCancel"
             android:text="@string/leftCancel" />
 
-    </LinearLayout>
+    </LinearLayout>-->
 
     <ScrollView
         android:id="@+id/scrollView1"

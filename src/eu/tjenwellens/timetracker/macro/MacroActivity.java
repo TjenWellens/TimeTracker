@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
@@ -122,7 +121,7 @@ public class MacroActivity extends Activity implements MacroHandler
 //            resetMacros();
 //            List<MacroI> macros = intentToMacros(this, data, ActivityResults.KEY_MACRO_SETTINGS);
 //            initMacros(macros);
-        } 
+        }
 //        else if (resultCode == Activity.RESULT_CANCELED)
 //        {
 //            Toast.makeText(this, "Activity cancelled ", Toast.LENGTH_LONG).show();

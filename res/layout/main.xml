@@ -6,7 +6,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical" >
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top" >
@@ -29,7 +29,7 @@
             android:onClick="btnMainMacros"
             android:text="@string/rightMacros" />
 
-    </LinearLayout>
+    </LinearLayout>-->
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -57,7 +57,7 @@
         android:layout_height="wrap_content" >
 
 
-        <Button
+<!--        <Button
             android:id="@+id/btnMainDelete"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
@@ -72,12 +72,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="btnMainResume"
-            android:text="@string/resume" />
+            android:text="@string/resume" />-->
 
-
+<!--android:layout_width="0dip"-->
         <Button
             android:id="@+id/btnMainAdd"
-            android:layout_width="0dip"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="btnMainAdd"

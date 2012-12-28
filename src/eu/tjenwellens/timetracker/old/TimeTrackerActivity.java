@@ -391,7 +391,7 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
         // add to gui
         activiteitViewContainer.addView(a);
         // check the new radiobutton
-        radioButtonChecked(a);
+//        radioButtonChecked(a);
 
     }
 
@@ -410,16 +410,16 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
         }
     }
 
-    public void radioButtonChecked(ActiviteitPanel a)
-    {
-        for (ActiviteitPanel ap : activiteiten) {
-            ap.uncheckRadioButton();
-        }
-        if (a != null) {
-            a.checkRadioButton();
-            setORresetSelectionMade(a);
-        }
-    }
+//    public void radioButtonChecked(ActiviteitPanel a)
+//    {
+//        for (ActiviteitPanel ap : activiteiten) {
+//            ap.uncheckRadioButton();
+//        }
+//        if (a != null) {
+//            a.checkRadioButton();
+//            setORresetSelectionMade(a);
+//        }
+//    }
 
     private void initMainGUI()
     {
@@ -430,34 +430,34 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
 
     private void initGUIButtons()
     {
-        Button macros = (Button) findViewById(R.id.btnMainMacros);
-        Button btnDetailCancel = (Button) findViewById(R.id.btnDetailCancel);
-        macros.setEnabled(true);
-        btnDetailCancel.setEnabled(true);
+//        Button macros = (Button) findViewById(R.id.btnMainMacros);
+//        Button btnDetailCancel = (Button) findViewById(R.id.btnDetailCancel);
+//        macros.setEnabled(true);
+//        btnDetailCancel.setEnabled(true);
 
         setORresetSelectionMade(currentActiviteit);
     }
 
     private void setORresetSelectionMade(ActiviteitPanel a)
     {
-        Button detail = (Button) findViewById(R.id.btnMainDetails);
-        Button cancel = (Button) findViewById(R.id.btnMainDelete);
-        Button resume = (Button) findViewById(R.id.btnMainResume);
+//        Button detail = (Button) findViewById(R.id.btnMainDetails);
+//        Button cancel = (Button) findViewById(R.id.btnMainDelete);
+//        Button resume = (Button) findViewById(R.id.btnMainResume);
         Button detailAdd = (Button) findViewById(R.id.btnDetailAdd);
-        Button detailSave = (Button) findViewById(R.id.btnDetailSave);
+//        Button detailSave = (Button) findViewById(R.id.btnDetailSave);
         if (a == null) {
-            detail.setEnabled(false);
-            cancel.setEnabled(false);
-            resume.setEnabled(false);
+//            detail.setEnabled(false);
+//            cancel.setEnabled(false);
+//            resume.setEnabled(false);
             detailAdd.setEnabled(false);
-            detailSave.setEnabled(false);
+//            detailSave.setEnabled(false);
             deleteDetails();
         } else {
-            detail.setEnabled(true);
-            cancel.setEnabled(true);
-            resume.setEnabled(!a.isRunning());
+//            detail.setEnabled(true);
+//            cancel.setEnabled(true);
+//            resume.setEnabled(!a.isRunning());
             detailAdd.setEnabled(true);
-            detailSave.setEnabled(true);
+//            detailSave.setEnabled(true);
             deleteDetails();
             loadDetails(a);
         }
@@ -607,6 +607,11 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
     }
 
     public void editDetail(DetailPanel dp)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void longClick(ActiviteitPanel a)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

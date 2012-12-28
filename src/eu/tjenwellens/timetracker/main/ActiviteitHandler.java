@@ -10,12 +10,12 @@ package eu.tjenwellens.timetracker.main;
  */
 public interface ActiviteitHandler
 {
-
     void activiteitSave(ActiviteitPanel a);
 
     void activiteitEdit(ActiviteitPanel a);
 
-    void radioButtonChecked(ActiviteitPanel a);
+//    void radioButtonChecked(ActiviteitPanel a);
+//    void activiteitStop(ActiviteitPanel a);
 
-    void activiteitStop(ActiviteitPanel a);
+    void longClick(ActiviteitPanel a);
 }
