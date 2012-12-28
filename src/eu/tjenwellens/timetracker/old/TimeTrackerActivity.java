@@ -194,7 +194,7 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
     }
 
     @Override
-    public void activiteitSave(ActiviteitPanel a)
+    public void saveActiviteit(ActiviteitPanel a)
     {
         // handle all UI except the Activiteitpanel
         if (a.getKalenderName() == null) {
@@ -396,7 +396,7 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
     }
 
     @Override
-    public void activiteitEdit(ActiviteitPanel a)
+    public void editActiviteit(ActiviteitPanel a)
     {
         final Dialog dialog = new DialogActiviteit(this, a);
         dialog.show();

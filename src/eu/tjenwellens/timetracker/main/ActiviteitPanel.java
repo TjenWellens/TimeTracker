@@ -74,7 +74,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
                 {
                     if (activiteitHandler != null)
                     {
-                        activiteitHandler.activiteitEdit(ActiviteitPanel.this);
+                        activiteitHandler.editActiviteit(ActiviteitPanel.this);
                     }
                 }
             });
@@ -121,7 +121,7 @@ public class ActiviteitPanel extends LinearLayout implements ActiviteitI
                     {
                         if (activiteitHandler != null && !isRunning())
                         {
-                            activiteitHandler.activiteitSave(ActiviteitPanel.this);
+                            activiteitHandler.saveActiviteit(ActiviteitPanel.this);
                         }
                     }
                 });
