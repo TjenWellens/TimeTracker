@@ -10,5 +10,5 @@ package eu.tjenwellens.timetracker.macro;
  */
 public interface MacroHandler
 {
-    void startActiviteit(MacroI macro);
+    void launchActiviteit(MacroI macro);
 }

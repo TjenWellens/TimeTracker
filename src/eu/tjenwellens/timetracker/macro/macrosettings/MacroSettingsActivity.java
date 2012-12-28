@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.tjenwellens.timetracker.macro.macrosettings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -39,7 +36,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
                 selectedKalender = (Kalender) selected;
             } else
             {
-                Toast.makeText(MacroSettingsActivity.this, "Failed to recognize  calender", Toast.LENGTH_LONG).show();
+                Toast.makeText(MacroSettingsActivity.this, "Failed to recognize calender", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -56,10 +53,10 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-//        List<MacroI> macros = MacroActivity.intentToMacros(this, getIntent(), ActivityResults.KEY_MACRO_SETTINGS);
-//        List<MacroI> macros = MacroActivity.loadDBMacros(this);
         // GUI
-        initMacroSettingsGUI(MacroActivity.loadDBMacros(this));
+        setContentView(R.layout.macro_settings);
+        loadMacros();
+        initSpinner();
     }
 
     @Override
@@ -72,21 +69,27 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         }
     }
 
-    private void exit(boolean save)
+    private void exit()
     {
-        if (save)
-        {
-            save();
-        }
-        this.saveOnExit = false;
         finish();
     }
 
     private void save()
     {
-        Toast.makeText(this, "SAVE", Toast.LENGTH_SHORT).show();
-        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
+        saveMacros(this, new ArrayList<MacroI>(macroPanels));
         setResult(RESULT_OK, new Intent());
+        this.saveOnExit = false;
+    }
+
+    /*
+     * Saves macros to DB
+     */
+    public static void saveMacros(Context context, List<MacroI> macros)
+    {
+        for (MacroI macro : macros)
+        {
+            macro.updateDBMacro(context);
+        }
     }
 
     private void addMacro(MacroI m)
@@ -105,30 +108,23 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         m.deleteDBMacro(this);
     }
 
-    private void initMacroSettingsGUI(List<MacroI> macros)
+    private void loadMacros()
     {
-        setContentView(R.layout.macro_settings);
-        initMacros(macros);
-        initSpinner();
-    }
-
-    private void initMacros(List<MacroI> macros)
-    {
-        final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
-        macroSettingsContainer.removeAllViews();
-        macroPanels.clear();
-        if (macros == null)
+        // reset panel
         {
-            return;
+            final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
+            macroSettingsContainer.removeAllViews();
+            macroPanels.clear();
         }
-        addAllMacros(macros);
-    }
-
-    private void addAllMacros(List<MacroI> macros)
-    {
-        for (MacroI macro : macros)
+        // get macros from DB
+        List<MacroI> macros = MacroActivity.loadDBMacros(this);
+        // add macros
+        if (macros != null && macros.size() > 0)
         {
-            addMacro(macro);
+            for (MacroI macro : macros)
+            {
+                addMacro(macro);
+            }
         }
     }
 
@@ -157,7 +153,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     public void onBackPressed()
     {
         // save when backing
-        exit(true);
+        save();
+        exit();
 //        super.onBackPressed();
     }
 
@@ -187,33 +184,22 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         txtTitle.setText(R.string.none);
     }
 
-    public void btnMacroSettingsSave(View button)
-    {
-//        Intent i = new Intent();
-////        MacroActivity.macrosToIntent(i, new ArrayList<MacroI>(macroPanels), ActivityResults.KEY_MACRO_SETTINGS);
-//        MacroActivity.saveMacros(this, new ArrayList<MacroI>(macroPanels));
-//        setResult(RESULT_OK, i);
-        launchSave();
-    }
-
-    public void btnMacroSettingsCancel(View button)
-    {
-        launchCancel();
-    }
-
     private void launchSave()
     {
-        exit(true);
+        save();
+        exit();
     }
 
     private void launchCancel()
     {
         // dont save macro's
         setResult(RESULT_CANCELED, new Intent());
-        exit(false);
+        exit();
     }
 
-    // Initiating Menu XML file (menu.xml)
+    /*
+     * Create menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -221,10 +207,8 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         return true;
     }
 
-    /**
-     * Event Handling for Individual menu item selected Identify single menu
-     * item by it's id
-     *
+    /*
+     * Handle menu
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)

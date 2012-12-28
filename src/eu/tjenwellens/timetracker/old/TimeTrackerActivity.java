@@ -588,7 +588,7 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
         // nothing to do yet
     }
 
-    public void startActiviteit(MacroI macro)
+    public void launchActiviteit(MacroI macro)
     {
         ActiviteitPanel a = new ActiviteitPanel(this, this, macro);
         addActiviteit(a);

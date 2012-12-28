@@ -17,21 +17,15 @@ import java.util.List;
  */
 public class MacroButtonPanel extends LinearLayout
 {
-
-    // gui
-//    private EditText txtTitle, txtKalender;
-//    private LinearLayout bottomPanel, buttonPanel;
-//    private Button btnAdd, btnClear, btnReset;
-    //
     private Context context;
     private MacroHandler macroHandler;
     private OnClickListener macroButtonhandler = new OnClickListener()
     {
-
         public void onClick(View view)
         {
-            if (view instanceof MacroI) {
-                macroHandler.startActiviteit((MacroI) view);
+            if (view instanceof MacroI)
+            {
+                macroHandler.launchActiviteit((MacroI) view);
             }
         }
     };
@@ -50,8 +44,10 @@ public class MacroButtonPanel extends LinearLayout
 
     public void addAllButtons(List<MacroI> macros)
     {
-        if (macros != null) {
-            for (MacroI macroI : macros) {
+        if (macros != null)
+        {
+            for (MacroI macroI : macros)
+            {
                 addButtonSilent(macroI);
             }
         }
@@ -69,15 +65,8 @@ public class MacroButtonPanel extends LinearLayout
     public void addButton(MacroI macro)
     {
         addButtonSilent(macro);
-
-        int newSqrt = (int) Math.ceil(Math.sqrt(macros.size()));
-
-//        if (newSqrt == sqrt) {
-//            onderverdeling.get(onderverdeling.size() - 1).addView(t, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f));
-//        } else {
         updateSqrt();
         resetButtons();
-//        }
     }
 
     private void updateSqrt()
@@ -88,20 +77,25 @@ public class MacroButtonPanel extends LinearLayout
     private void resetButtons()
     {
         // delete all
-        for (LinearLayout ll : onderverdeling) {
+        for (LinearLayout ll : onderverdeling)
+        {
             ll.removeAllViews();
             this.removeView(ll);
         }
         // add per onderverdeling knoppen
-        if (sqrt == 0) {
+        if (sqrt == 0)
+        {
             return;
         }
-        for (int i = 0; i < sqrt; i++) {
+        for (int i = 0; i < sqrt; i++)
+        {
             // add ondervedeling
             LinearLayout ll = new LinearLayout(context);
             ll.setOrientation(HORIZONTAL);
-            for (int j = 0; j < sqrt; j++) {
-                if (i * sqrt + j < macros.size()) {
+            for (int j = 0; j < sqrt; j++)
+            {
+                if (i * sqrt + j < macros.size())
+                {
                     ll.addView(macros.get(i * sqrt + j), new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f));
                 }
             }
@@ -125,13 +119,9 @@ public class MacroButtonPanel extends LinearLayout
 
     public void reset()
     {
-//        for (MacroI macro : macros) {
-//            //TODO: klopt dit wel?
-//            macro.deleteDBMacro(context);
-//        }
-        macros.clear();
         sqrt = 0;
         this.removeAllViews();
+        macros.clear();
         resetButtons();
     }
 
