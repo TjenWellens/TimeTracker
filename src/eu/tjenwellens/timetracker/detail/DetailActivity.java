@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.tjenwellens.timetracker.detail;
 
 import android.app.Activity;
@@ -27,7 +23,6 @@ import java.util.ArrayList;
  */
 public class DetailActivity extends Activity implements DetailHandler
 {
-    //
     private ArrayList<DetailPanel> currentDetails = new ArrayList<DetailPanel>();
     private String[] details;
 
@@ -36,43 +31,12 @@ public class DetailActivity extends Activity implements DetailHandler
     {
         super.onCreate(savedInstanceState);
         String[] detail = MainActivity.intentToArray(getIntent(), ActivityResults.KEY_ACTIVITEIT_DETAIL);
-//        Bundle extras = getIntent().getExtras();
-//        if (extras != null) {
-//            detail = extras.getStringArray(ActivityResults.ACTIVITEIT_DETAILS_ARRAY);
-//            Toast.makeText(this, "werkt"+detail, Toast.LENGTH_LONG);
-//        } else {
-//            Toast.makeText(this, "Detail intent null", Toast.LENGTH_SHORT).show();
-////            finish();
-////            return;
-//        }
-//        if (detail == null) {
-//
-//            Toast.makeText(this, "Detail null", Toast.LENGTH_SHORT).show();
-//            finish();
-//            return;
-//        }
         // GUI
-        initDetailGUI();
+        setContentView(R.layout.detail);
         if (detail != null)
         {
             initDetails(detail);
         }
-    }
-
-    private void initDetailGUI()
-    {
-        setContentView(R.layout.detail);
-    }
-
-    @Override
-    public void deleteDetail(DetailPanel dp)
-    {
-        final ViewGroup detailViewContainer = (ViewGroup) findViewById(R.id.pnlDetail);
-        if (currentDetails.remove(dp))
-        {
-            detailViewContainer.removeView(dp);
-        }
-        Toast.makeText(this, "Detail deleted", Toast.LENGTH_SHORT).show();
     }
 
     private String[] detailsFromPanels()
@@ -133,6 +97,64 @@ public class DetailActivity extends Activity implements DetailHandler
         }
     }
 
+    /*
+     * Deletes detail entry
+     */
+    @Override
+    public void deleteDetail(DetailPanel dp)
+    {
+        final ViewGroup detailViewContainer = (ViewGroup) findViewById(R.id.pnlDetail);
+        if (currentDetails.remove(dp))
+        {
+            detailViewContainer.removeView(dp);
+        }
+        Toast.makeText(this, "Detail deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    /*
+     * Launch MacroSettingsActivity
+     */
+    @Override
+    public void editDetail(DetailPanel dp)
+    {
+        launchEdit();
+    }
+
+    /*
+     * Launch MacroSettingsActivity
+     */
+    private void launchEdit()
+    {
+        Intent intent = new Intent(this, DetailSettingsActivity.class);
+        MainActivity.arrayToIntent(intent, detailsFromPanels(), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
+        startActivityForResult(intent, ActivityResults.DETAIL_EDIT);
+    }
+
+    /*
+     * Quit & save changes
+     */
+    private void launchSave()
+    {
+        details = detailsFromPanels();
+        Intent returnIntent = new Intent();
+        MainActivity.arrayToIntent(returnIntent, details, ActivityResults.KEY_ACTIVITEIT_DETAIL);
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
+
+    /*
+     * Quit without saving changes
+     */
+    private void launchCancel()
+    {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    /*
+     * Handle input from started activities
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -152,45 +174,18 @@ public class DetailActivity extends Activity implements DetailHandler
         }
     }
 
-    public void editDetail(DetailPanel dp)
-    {
-        launchEdit();
-    }
-
-    public void btnDetailCancel(View button)
-    {
-        launchCancel();
-    }
-
-    public void btnDetailSave(View button)
+    /*
+     * Handle back button
+     */
+    @Override
+    public void onBackPressed()
     {
         launchSave();
     }
 
-    private void launchEdit()
-    {
-        Intent intent = new Intent(this, DetailSettingsActivity.class);
-        MainActivity.arrayToIntent(intent, detailsFromPanels(), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
-        startActivityForResult(intent, ActivityResults.DETAIL_EDIT);
-    }
-
-    private void launchSave()
-    {
-        details = detailsFromPanels();
-        Intent returnIntent = new Intent();
-        MainActivity.arrayToIntent(returnIntent, details, ActivityResults.KEY_ACTIVITEIT_DETAIL);
-        setResult(RESULT_OK, returnIntent);
-        finish();
-    }
-
-    private void launchCancel()
-    {
-        Intent returnIntent = new Intent();
-        setResult(RESULT_CANCELED, returnIntent);
-        finish();
-    }
-
-    // Initiating Menu XML file (menu.xml)
+    /*
+     * Create menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -198,10 +193,8 @@ public class DetailActivity extends Activity implements DetailHandler
         return true;
     }
 
-    /**
-     * Event Handling for Individual menu item selected Identify single menu
-     * item by it's id
-     *
+    /*
+     * Handle menu
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)

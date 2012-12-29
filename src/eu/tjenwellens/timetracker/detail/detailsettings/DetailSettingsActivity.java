@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.tjenwellens.timetracker.detail.detailsettings;
 
 import android.app.Activity;
@@ -9,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import eu.tjenwellens.timetracker.ActivityResults;
 import eu.tjenwellens.timetracker.R;
@@ -24,21 +19,9 @@ public class DetailSettingsActivity extends Activity
 {
     private String detailString;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        String[] detail = MainActivity.intentToArray(getIntent(), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
-        // GUI
-        initDetailSettingsGUI();
-        initDetails(detail);
-    }
-
-    private void initDetailSettingsGUI()
-    {
-        setContentView(R.layout.detail_settings);
-    }
-
+    /*
+     * Init details
+     */
     private void initDetails(String[] detail)
     {
         if (detail == null)
@@ -50,16 +33,9 @@ public class DetailSettingsActivity extends Activity
         txtDetail.setSelection(txtDetail.getText().length());
     }
 
-    public void btnDetailSettingsCancel(View button)
-    {
-        launchCancel();
-    }
-
-    public void btnDetailSettingsSave(View button)
-    {
-        launchSave();
-    }
-
+    /*
+     * Exit & save
+     */
     private void launchSave()
     {
         final EditText txtDetail = (EditText) findViewById(R.id.txtDetailSettingsDetail);
@@ -70,6 +46,9 @@ public class DetailSettingsActivity extends Activity
         finish();
     }
 
+    /*
+     * Exit, do not save
+     */
     private void launchCancel()
     {
         Intent returnIntent = new Intent();
@@ -77,7 +56,31 @@ public class DetailSettingsActivity extends Activity
         finish();
     }
 
-    // Initiating Menu XML file (menu.xml)
+    /*
+     * Handles back button
+     */
+    @Override
+    public void onBackPressed()
+    {
+        launchSave();
+    }
+
+    /*
+     * Handles activity creation
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        String[] detail = MainActivity.intentToArray(getIntent(), ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
+        // GUI
+        setContentView(R.layout.detail_settings);
+        initDetails(detail);
+    }
+
+    /*
+     * Create menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -85,10 +88,8 @@ public class DetailSettingsActivity extends Activity
         return true;
     }
 
-    /**
-     * Event Handling for Individual menu item selected Identify single menu
-     * item by it's id
-     *
+    /*
+     * Handle menu
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)

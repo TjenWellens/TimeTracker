@@ -181,7 +181,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
         // remove activiteit
         deleteActiviteit(a);
     }
-
+    
     @Override
     public void editActiviteit(ActiviteitPanel a)
     {
@@ -217,7 +217,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
             intent.putExtra(key + i, array[i]);
         }
     }
-
+    
     public static String[] intentToArray(Intent intent, String key)
     {
         int amount = intent.getIntExtra(key + "_amount", -1);
@@ -294,7 +294,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
             case R.id.menu_macros:
                 launchMacros();
                 return true;
-
+            
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -331,7 +331,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
             case R.id.menu_delete:
                 deleteActiviteit(currentContextActiviteit);
                 return true;
-
+            
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -351,7 +351,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
                 // start the choosen macro
                 String title = data.getStringExtra(MacroActivity.MACRO_TITLE);
                 String calendar = data.getStringExtra(MacroActivity.MACRO_CALENDAR);
-                MacroI m = MacroFactory.createMacro(this, title, Kalender.getKalenderByName(this, calendar));
+                MacroI m = MacroFactory.loadMacro(this, -1, title, Kalender.getKalenderByName(this, calendar));
                 addActiviteit(new ActiviteitPanel(this, this, m));
             } else if (requestCode == ActivityResults.DETAIL_START)
             {
