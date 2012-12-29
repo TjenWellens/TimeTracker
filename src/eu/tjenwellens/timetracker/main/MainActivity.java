@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class MainActivity extends Activity implements ActiviteitHandler
 {
-    private ActiviteitPanel currentContextActiviteit = null;
+    private ActiviteitPanel currentActiviteit = null;
     private ArrayList<ActiviteitPanel> activiteiten = new ArrayList<ActiviteitPanel>();
     // <editor-fold defaultstate="collapsed" desc="Folding">
     // </editor-fold>
@@ -120,8 +120,9 @@ public class MainActivity extends Activity implements ActiviteitHandler
     /*
      * Starts Detail Activity
      */
-    private void launchDetail(ActiviteitI a)
+    private void launchDetail(ActiviteitPanel a)
     {
+        currentActiviteit = a;
         // TODO: fix cross activity data
         Intent intent = new Intent(this, DetailActivity.class);
         arrayToIntent(intent, a.getDescriptionEntries(), ActivityResults.KEY_ACTIVITEIT_DETAIL);
@@ -181,11 +182,21 @@ public class MainActivity extends Activity implements ActiviteitHandler
         // remove activiteit
         deleteActiviteit(a);
     }
-    
-    @Override
-    public void editActiviteit(ActiviteitPanel a)
+
+    private void launchContextMenu(ActiviteitPanel a)
     {
-        launchEdit(a);
+        currentActiviteit = a;
+        // start context menu
+        openContextMenu(a);
+    }
+
+    /*
+     * Called when the activiteitpanel is clicked
+     */
+    @Override
+    public void shortClick(ActiviteitPanel a)
+    {
+        launchDetail(a);
     }
 
     /*
@@ -194,9 +205,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
     @Override
     public void longClick(ActiviteitPanel a)
     {
-        currentContextActiviteit = a;
-        // start context menu
-        openContextMenu(a);
+        launchContextMenu(a);
     }
     // </editor-fold>
 
@@ -217,7 +226,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
             intent.putExtra(key + i, array[i]);
         }
     }
-    
+
     public static String[] intentToArray(Intent intent, String key)
     {
         int amount = intent.getIntExtra(key + "_amount", -1);
@@ -294,7 +303,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
             case R.id.menu_macros:
                 launchMacros();
                 return true;
-            
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -306,7 +315,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
     @Override
     public boolean onContextItemSelected(MenuItem item)
     {
-        if (currentContextActiviteit == null)
+        if (currentActiviteit == null)
         {
             return super.onOptionsItemSelected(item);
         }
@@ -314,24 +323,24 @@ public class MainActivity extends Activity implements ActiviteitHandler
         {
             // Edit
             case R.id.menu_edit:
-                launchEdit(currentContextActiviteit);
+                launchEdit(currentActiviteit);
                 return true;
 
             // Resume
             case R.id.menu_resume:
-                resumeActiviteit(currentContextActiviteit);
+                resumeActiviteit(currentActiviteit);
                 return true;
 
             // Details
             case R.id.menu_details:
-                launchDetail(currentContextActiviteit);
+                launchDetail(currentActiviteit);
                 return true;
 
             // Delete
             case R.id.menu_delete:
-                deleteActiviteit(currentContextActiviteit);
+                deleteActiviteit(currentActiviteit);
                 return true;
-            
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -359,7 +368,7 @@ public class MainActivity extends Activity implements ActiviteitHandler
                 String[] details = intentToArray(data, ActivityResults.KEY_ACTIVITEIT_DETAIL);
                 if (details != null)
                 {
-                    this.currentContextActiviteit.setDescription(details);
+                    this.currentActiviteit.setDescription(details);
                 } else
                 {
                     Toast.makeText(this, "updating activity failed", Toast.LENGTH_LONG).show();
