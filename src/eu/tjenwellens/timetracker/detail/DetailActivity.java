@@ -166,7 +166,7 @@ public class DetailActivity extends Activity implements DetailHandler
                 String[] detail = MainActivity.intentToArray(data, ActivityResults.KEY_ACTIVITEIT_DETAIL_SETTINGS);
                 removeDetails();
                 initDetails(detail);
-                Toast.makeText(this, "Changes saved", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
             } else if (resultCode == Activity.RESULT_CANCELED)
             {
                 Toast.makeText(this, "Changes cancelled", Toast.LENGTH_SHORT).show();
