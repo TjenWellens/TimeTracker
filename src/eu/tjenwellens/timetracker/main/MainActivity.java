@@ -9,6 +9,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -18,6 +19,8 @@ import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
 import eu.tjenwellens.timetracker.detail.DetailActivity;
+import eu.tjenwellens.timetracker.gestures.SimpleGestureFilter;
+import eu.tjenwellens.timetracker.gestures.SimpleGestureListener;
 import eu.tjenwellens.timetracker.macro.MacroActivity;
 import eu.tjenwellens.timetracker.macro.MacroFactory;
 import eu.tjenwellens.timetracker.macro.MacroI;
@@ -28,11 +31,49 @@ import java.util.List;
  *
  * @author Tjen
  */
-public class MainActivity extends Activity implements ActiviteitHandler
+public class MainActivity extends Activity implements ActiviteitHandler, SimpleGestureListener
 {
     private ActiviteitPanel currentActiviteit = null;
     private ArrayList<ActiviteitPanel> activiteiten = new ArrayList<ActiviteitPanel>();
+    // gestures
+    private SimpleGestureFilter detector;
     // <editor-fold defaultstate="collapsed" desc="Folding">
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Gestures">
+    @Override
+    public void onSwipe(int direction)
+    {
+        switch (direction)
+        {
+            case SimpleGestureFilter.SWIPE_RIGHT:
+                // do nothing
+                break;
+            case SimpleGestureFilter.SWIPE_LEFT:
+                // start macro's
+                launchMacros();
+                break;
+            case SimpleGestureFilter.SWIPE_DOWN:
+                // do nothing
+                break;
+            case SimpleGestureFilter.SWIPE_UP:
+                // do nothing
+                break;
+        }
+    }
+
+    @Override
+    public void onDoubleTap()
+    {
+//        Toast.makeText(this, "Double Tap", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent me)
+    {
+        this.detector.onTouchEvent(me);
+        return super.dispatchTouchEvent(me);
+    }
     // </editor-fold>
 
     /*
@@ -256,6 +297,8 @@ public class MainActivity extends Activity implements ActiviteitHandler
         setContentView(R.layout.main);
         // Initialize preferences
         loadActiviteiten();
+        // init gestures
+        detector = new SimpleGestureFilter(this, this);
     }
 
     /*
