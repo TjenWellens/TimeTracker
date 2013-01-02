@@ -145,7 +145,7 @@ public class MainActivity extends Activity implements ActiviteitHandler, SimpleG
      */
     private void launchEdit(ActiviteitPanel a)
     {
-        final Dialog dialog = new DialogActiviteit(this, a);
+        final Dialog dialog = new ActiviteitEditDialog(this, a);
         dialog.show();
     }
 

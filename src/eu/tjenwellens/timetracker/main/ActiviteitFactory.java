@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.tjenwellens.timetracker.main;
 
 import android.content.Context;
@@ -16,7 +12,6 @@ import eu.tjenwellens.timetracker.macro.MacroI;
  */
 public class ActiviteitFactory
 {
-
     private static final String SPLITTER = "\n";
 
     private ActiviteitFactory()
@@ -26,9 +21,11 @@ public class ActiviteitFactory
     public static String mergeDetailEntries(String[] strings)
     {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < strings.length; i++) {
+        for (int i = 0; i < strings.length; i++)
+        {
             sb.append(strings[i]);
-            if (i < strings.length - 1) {
+            if (i < strings.length - 1)
+            {
                 sb.append(SPLITTER);
             }
         }
@@ -46,22 +43,15 @@ public class ActiviteitFactory
         a.saveDBActiviteit(context);
         return a;
     }
-    
+
     public static ActiviteitI loadActiviteit(Context context, int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
     {
         return new Activiteit(id, kalender, title, startTimeMillis, endTimeMillis, description);
     }
 
-//    public static ActiviteitI createActiviteit(Context context, int id, Kalender kalender, String title, long startTimeMillis, long endTimeMillis, String description)
-//    {
-//        Activiteit a = new Activiteit(id, kalender, title, startTimeMillis, endTimeMillis, description);
-//        a.saveDBActiviteit(context);
-//        return a;
-//    }
-
     public static ActiviteitI createActiviteit(Context context)
     {
-        Activiteit a = new Activiteit();
+        Activiteit a = new Activiteit(Kalender.getDefaultKalender(context));
         a.saveDBActiviteit(context);
         return a;
     }
@@ -75,10 +65,7 @@ public class ActiviteitFactory
 
     private static class Activiteit implements ActiviteitI
     {
-
         private static int activityCounter = 0;
-        //
-        private boolean running;
         //
         private Kalender kalender = null;
         private long startTimeMillis;
@@ -95,7 +82,6 @@ public class ActiviteitFactory
             this.title = title;
             this.startTimeMillis = startTimeMillis;
             this.endTimeMillis = endTimeMillis;
-            this.running = endTimeMillis < 0;
             this.description = null;
         }
 
@@ -107,18 +93,17 @@ public class ActiviteitFactory
             this.title = title;
             this.startTimeMillis = startTimeMillis;
             this.endTimeMillis = endTimeMillis;
-            this.running = endTimeMillis < 0;
             this.description = description.split(SPLITTER);
         }
 
-        private Activiteit()
+        private Activiteit(Kalender kalender)
         {
             this.startTimeMillis = System.currentTimeMillis();
             this.endTimeMillis = -1;
+            this.kalender = kalender;
             activityCounter++;
             this.title = "Activiteit" + activityCounter;
             this.id = activityCounter;
-            this.running = true;
             this.description = null;
         }
 
@@ -130,18 +115,18 @@ public class ActiviteitFactory
             this.endTimeMillis = -1;
             activityCounter++;
             this.id = activityCounter;
-            this.running = true;
             this.description = null;
         }
 
         @Override
         public boolean stopRunning()
         {
-            if (running) {
+            if (isRunning())
+            {
                 endTimeMillis = System.currentTimeMillis();
-                running = false;
                 return true;
-            } else {
+            } else
+            {
                 return false;
             }
         }
@@ -149,11 +134,12 @@ public class ActiviteitFactory
         @Override
         public boolean resumeRunning()
         {
-            if (!running) {
+            if (!isRunning())
+            {
                 endTimeMillis = -1;
-                running = true;
                 return true;
-            } else {
+            } else
+            {
                 return false;
             }
         }
@@ -161,9 +147,11 @@ public class ActiviteitFactory
         private String mergeDetails(String splitter)
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < description.length; i++) {
+            for (int i = 0; i < description.length; i++)
+            {
                 sb.append(description[i]);
-                if (i < description.length - 1) {
+                if (i < description.length - 1)
+                {
                     sb.append(splitter);
                 }
             }
@@ -173,13 +161,16 @@ public class ActiviteitFactory
         @Override
         public Evenement getEvenement()
         {
-            if (!running && kalender != null) {
+            if (!isRunning() && kalender != null)
+            {
                 Evenement e = new Evenement(kalender.getId(), title, startTimeMillis, endTimeMillis);
-                if (description != null) {
+                if (description != null)
+                {
                     e.setDescription(mergeDetails(SPLITTER));
                 }
                 return e;
-            } else {
+            } else
+            {
                 return null;
             }
         }
@@ -215,7 +206,8 @@ public class ActiviteitFactory
         @Override
         public String getDuration()
         {
-            if (endTimeMillis < 0) {
+            if (endTimeMillis < 0)
+            {
                 return "running";
             }
             long temp = (endTimeMillis - startTimeMillis) / 1000;
@@ -230,15 +222,20 @@ public class ActiviteitFactory
             int week = (int) temp;
 
             String s = "0 s";
-            if (week > 0) {
+            if (week > 0)
+            {
                 s = week + " w";
-            } else if (day > 0) {
+            } else if (day > 0)
+            {
                 s = day + " d";
-            } else if (hour > 0) {
+            } else if (hour > 0)
+            {
                 s = hour + " h";
-            } else if (min > 0) {
+            } else if (min > 0)
+            {
                 s = min + " m";
-            } else if (sec > 0) {
+            } else if (sec > 0)
+            {
                 s = sec + " s";
             }
             return s;
@@ -247,7 +244,8 @@ public class ActiviteitFactory
         @Override
         public String getKalenderName()
         {
-            if (kalender == null) {
+            if (kalender == null)
+            {
                 return null;
             }
             return kalender.getName();
@@ -280,7 +278,7 @@ public class ActiviteitFactory
         @Override
         public boolean isRunning()
         {
-            return running;
+            return endTimeMillis < 0;
         }
 
         public String getDescription()

@@ -6,7 +6,6 @@ import android.net.Uri;
 
 public class Kalender implements CharSequence
 {
-
     public static final String CONTENT_CALENDARS = "content://com.android.calendar/calendars";
     private String name;
     private int id;
@@ -30,10 +29,21 @@ public class Kalender implements CharSequence
     private static Kalender[] arraysToKalenders(String[] names, int[] ids)
     {
         Kalender[] calendars = new Kalender[Math.min(names.length, ids.length)];
-        for (int i = 0; i < calendars.length; i++) {
+        for (int i = 0; i < calendars.length; i++)
+        {
             calendars[i] = new Kalender(names[i], ids[i]);
         }
         return calendars;
+    }
+
+    public static Kalender getDefaultKalender(Context c)
+    {
+        Kalender[] kalenders = retrieveKalenders(c);
+        if (kalenders == null || kalenders.length <= 0)
+        {
+            return null;
+        }
+        return kalenders[0];
     }
 
     public static Kalender[] retrieveKalenders(Context c)
@@ -49,10 +59,12 @@ public class Kalender implements CharSequence
 //        }
         cursor = c.getContentResolver().query(Uri.parse(CONTENT_CALENDARS), projection, args, null, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst())
+        {
             String[] calNames = new String[cursor.getCount()];
             int[] calIds = new int[cursor.getCount()];
-            for (int i = 0; i < calNames.length; i++) {
+            for (int i = 0; i < calNames.length; i++)
+            {
                 // retrieve the calendar names and ids
                 // at this stage you can print out the display names to get an
                 // idea of what calendars the user has
@@ -61,7 +73,8 @@ public class Kalender implements CharSequence
                 cursor.moveToNext();
             }
             cursor.close();
-            if (calIds.length > 0) {
+            if (calIds.length > 0)
+            {
                 // we're safe here to do any further work
                 kalenders = arraysToKalenders(calNames, calIds);
             }
@@ -69,19 +82,20 @@ public class Kalender implements CharSequence
         return kalenders;
     }
 
-    public static Kalender getKalenderByName(Context c, String name)
+    public static Kalender getKalenderByName(Context c, String kalenderName)
     {
-        if (name == null) {
+        if (kalenderName == null)
+        {
             return null;
         }
-        Kalender kalender = null;
-        for (Kalender k : retrieveKalenders(c)) {
-            if (k.getName().equals(name)) {
-                kalender = k;
-                break;
+        for (Kalender k : retrieveKalenders(c))
+        {
+            if (k.getName().equals(kalenderName))
+            {
+                return k;
             }
         }
-        return kalender;
+        return null;
     }
 
     public int length()

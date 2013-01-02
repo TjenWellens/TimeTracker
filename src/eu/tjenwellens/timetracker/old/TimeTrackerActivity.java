@@ -398,7 +398,7 @@ public class TimeTrackerActivity extends Activity implements ActiviteitHandler, 
     @Override
     public void shortClick(ActiviteitPanel a)
     {
-        final Dialog dialog = new DialogActiviteit(this, a);
+        final Dialog dialog = new ActiviteitEditDialog(this, a);
         dialog.show();
     }
 
