@@ -228,7 +228,7 @@ public class ActiviteitEditDialog extends Dialog
         Kalender kalender = Kalender.getKalenderByName(kalenders, activiteit.getKalenderName());
         if (kalenders == null)
         {
-            Toast.makeText(context, "Error loading calendars", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.error_load_calendars), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -249,7 +249,7 @@ public class ActiviteitEditDialog extends Dialog
             this.selectedKalender = kalender;
         } else
         {
-            Toast.makeText(context, "Error loading calendar, setting default (" + position + ")", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.error_load_calendar_default), Toast.LENGTH_LONG).show();
             // spinner position = 0
             this.selectedKalender = kalenders[0];
         }

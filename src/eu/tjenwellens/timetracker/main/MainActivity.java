@@ -339,10 +339,10 @@ public class MainActivity extends Activity implements ActiviteitHandler, SimpleG
     {
         switch (item.getItemId())
         {
-            case R.id.menu_settings:
-                // TODO: open settings
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                return true;
+//            case R.id.menu_settings:
+//                // TODO: open settings
+//                Toast.makeText(this, getString(R.string.menu_settings), Toast.LENGTH_SHORT).show();
+//                return true;
             case R.id.menu_macros:
                 launchMacros();
                 return true;

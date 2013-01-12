@@ -36,14 +36,14 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
                 selectedKalender = (Kalender) selected;
             } else
             {
-                Toast.makeText(MacroSettingsActivity.this, "Failed to recognize calender", Toast.LENGTH_LONG).show();
+                Toast.makeText(MacroSettingsActivity.this, getString(R.string.error_recognize_calendar), Toast.LENGTH_LONG).show();
             }
         }
 
         public void onNothingSelected(AdapterView<?> parent)
         {
             selectedKalender = null;
-            Toast.makeText(MacroSettingsActivity.this, "No selection made", Toast.LENGTH_LONG).show();
+            Toast.makeText(MacroSettingsActivity.this, getString(R.string.error_no_selection), Toast.LENGTH_LONG).show();
         }
     };
     // save when shutdown improper
@@ -133,7 +133,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         Kalender[] kalenders = Kalender.retrieveKalenders(this);
         if (kalenders == null)
         {
-            Toast.makeText(this, "Error initializing calendars", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_load_calendars), Toast.LENGTH_LONG).show();
             return;
         }
         this.selectedKalender = kalenders[0];

@@ -1,6 +1,7 @@
 package eu.tjenwellens.timetracker.main;
 
 import android.content.Context;
+import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Evenement;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 import eu.tjenwellens.timetracker.database.DatabaseHandler;
@@ -51,7 +52,7 @@ public class ActiviteitFactory
 
     public static ActiviteitI createActiviteit(Context context)
     {
-        Activiteit a = new Activiteit(Kalender.getDefaultKalender(context));
+        Activiteit a = new Activiteit(Kalender.getDefaultKalender(context), context.getString(R.string.activiteit_prefix));
         a.saveDBActiviteit(context);
         return a;
     }
@@ -96,7 +97,7 @@ public class ActiviteitFactory
             this.description = description.split(SPLITTER);
         }
 
-        private Activiteit(Kalender kalender)
+        private Activiteit(Kalender kalender, String title_prefix)
         {
             this.startTimeMillis = System.currentTimeMillis();
             this.endTimeMillis = -1;

@@ -43,5 +43,18 @@
     <string name="stop">Stop</string>
     <string name="none"></string>
     <string name="running">running</string>
+    
+<!--Error messages-->
+<!--MacroSettingsActivity-->
+    <string name="error_recognize_calendar">Failed to recognize calender</string>
+    <string name="error_no_selection">No selection made</string>
+    <string name="error_load_calendars">Error initializing calendars</string>
+<!--ActiviteitEditDialog-->
+    <!--<string name="error_load_calendars">Error initializing calendars</string>-->
+    <string name="error_load_calendar_default">Error loading calendar, using default</string>
+    
+    
+    <string name="activiteit_edit_dialog_title">Editing event</string>
+    <string name="activiteit_prefix">Activity</string>
 
 </resources>

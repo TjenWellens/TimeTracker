@@ -2,9 +2,9 @@
 <!--    <item android:id="@+id/menu_details"
         android:title="@string/details"
         android:orderInCategory="100" />-->
-    <item android:id="@+id/menu_settings"
+<!--    <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
-        android:orderInCategory="100" />
+        android:orderInCategory="100" />-->
     <item android:id="@+id/menu_macros"
         android:title="@string/macros"
         android:orderInCategory="100" />
