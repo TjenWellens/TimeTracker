@@ -98,6 +98,18 @@ public class Kalender implements CharSequence
         return null;
     }
 
+    public static Kalender getKalenderByName(Kalender[] kalenders, String kalenderName)
+    {
+        for (Kalender k : kalenders)
+        {
+            if (k.getName().equals(kalenderName))
+            {
+                return k;
+            }
+        }
+        return null;
+    }
+
     public int length()
     {
         return name.length();

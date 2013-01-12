@@ -15,6 +15,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import eu.tjenwellens.timetracker.R;
 import eu.tjenwellens.timetracker.calendar.Kalender;
 
@@ -77,7 +78,7 @@ public class ActiviteitEditDialog extends Dialog
             mainpanel.addView(tvCal);
             // CALENDAR spinner
             spnCal = new Spinner(context);
-            initSpinner(context, spnCal, activiteit.getKalenderName());
+            initSpinner(context, spnCal);
             mainpanel.addView(spnCal, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
             // TIME PICKER
@@ -221,19 +222,15 @@ public class ActiviteitEditDialog extends Dialog
         dismiss();
     }
 
-    private void initSpinner(Context context, Spinner spinner, String kalenderName)
+    private void initSpinner(Context context, Spinner spinner)
     {
         Kalender[] kalenders = Kalender.retrieveKalenders(context);
+        Kalender kalender = Kalender.getKalenderByName(kalenders, activiteit.getKalenderName());
         if (kalenders == null)
         {
+            Toast.makeText(context, "Error loading calendars", Toast.LENGTH_LONG).show();
             return;
         }
-        Kalender kalender = Kalender.getKalenderByName(context, kalenderName);
-        if (kalenderName == null)
-        {
-            kalender = kalenders[0];
-        }
-        this.selectedKalender = kalender;
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_dropdown_item, kalenders);
@@ -243,6 +240,19 @@ public class ActiviteitEditDialog extends Dialog
         spinner.setOnItemSelectedListener(spinnerListener);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
+
+        // set spinner start position
+        int position = adapter.getPosition(kalender);
+        if (position >= 0)
+        {
+            spinner.setSelection(position);
+            this.selectedKalender = kalender;
+        } else
+        {
+            Toast.makeText(context, "Error loading calendar, setting default (" + position + ")", Toast.LENGTH_LONG).show();
+            // spinner position = 0
+            this.selectedKalender = kalenders[0];
+        }
     }
 
     private class TimeSetListener implements OnTimeSetListener
