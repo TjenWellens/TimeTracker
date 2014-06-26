@@ -10,11 +10,12 @@
     </uses-permission>
 
     <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="10" />
+        android:minSdkVersion="9"
+        android:targetSdkVersion="14" />
 
     <application
         android:icon="@drawable/clock"
+        android:name="TimeTrackerApplication"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity

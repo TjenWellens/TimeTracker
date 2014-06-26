@@ -22,26 +22,20 @@ import java.util.List;
  *
  * @author Tjen
  */
-public class MacroSettingsActivity extends Activity implements MacroSettingsHandler
-{
+public class MacroSettingsActivity extends Activity implements MacroSettingsHandler {
     private List<MacroSettingsPanel> macroPanels = new ArrayList<MacroSettingsPanel>();
     private Kalender selectedKalender;
-    private OnItemSelectedListener spinnerListener = new OnItemSelectedListener()
-    {
-        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
-        {
+    private OnItemSelectedListener spinnerListener = new OnItemSelectedListener() {
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
             Object selected = parent.getItemAtPosition(pos);
-            if (selected instanceof Kalender)
-            {
+            if (selected instanceof Kalender) {
                 selectedKalender = (Kalender) selected;
-            } else
-            {
+            } else {
                 Toast.makeText(MacroSettingsActivity.this, getString(R.string.error_recognize_calendar), Toast.LENGTH_LONG).show();
             }
         }
 
-        public void onNothingSelected(AdapterView<?> parent)
-        {
+        public void onNothingSelected(AdapterView<?> parent) {
             selectedKalender = null;
             Toast.makeText(MacroSettingsActivity.this, getString(R.string.error_no_selection), Toast.LENGTH_LONG).show();
         }
@@ -50,8 +44,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     private boolean saveOnExit = true;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // GUI
         setContentView(R.layout.macro_settings);
@@ -60,22 +53,18 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
-        if (saveOnExit)
-        {
+        if (saveOnExit) {
             save();
         }
     }
 
-    private void exit()
-    {
+    private void exit() {
         finish();
     }
 
-    private void save()
-    {
+    private void save() {
         saveMacros(this, new ArrayList<MacroI>(macroPanels));
         setResult(RESULT_OK, new Intent());
         this.saveOnExit = false;
@@ -84,32 +73,27 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     /*
      * Saves macros to DB
      */
-    public static void saveMacros(Context context, List<MacroI> macros)
-    {
-        for (MacroI macro : macros)
-        {
+    public static void saveMacros(Context context, List<MacroI> macros) {
+        for (MacroI macro : macros) {
             macro.updateDBMacro(context);
         }
     }
 
-    private void addMacro(MacroI m)
-    {
+    private void addMacro(MacroI m) {
         final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
         MacroSettingsPanel mp = new MacroSettingsPanel(this, this, m);
         macroSettingsContainer.addView(mp);
         macroPanels.add(mp);
     }
 
-    public void removeMacro(MacroSettingsPanel m)
-    {
+    public void removeMacro(MacroSettingsPanel m) {
         final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
         macroSettingsContainer.removeView(m);
         macroPanels.remove(m);
         m.deleteDBMacro(this);
     }
 
-    private void loadMacros()
-    {
+    private void loadMacros() {
         // reset panel
         {
             final LinearLayout macroSettingsContainer = (LinearLayout) findViewById(R.id.pnlMacroSettings);
@@ -119,24 +103,25 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         // get macros from DB
         List<MacroI> macros = MacroActivity.loadDBMacros(this);
         // add macros
-        if (macros != null && macros.size() > 0)
-        {
-            for (MacroI macro : macros)
-            {
+        if (macros != null && macros.size() > 0) {
+            for (MacroI macro : macros) {
                 addMacro(macro);
             }
         }
     }
 
-    private void initSpinner()
-    {
+    private void initSpinner() {
         Kalender[] kalenders = Kalender.retrieveKalenders(this);
-        if (kalenders == null)
-        {
+        if (kalenders == null) {
             Toast.makeText(this, getString(R.string.error_load_calendars), Toast.LENGTH_LONG).show();
             return;
         }
-        this.selectedKalender = kalenders[0];
+        if (kalenders.length > 0) {
+            this.selectedKalender = kalenders[0];
+        } else {
+            //TODO
+            Toast.makeText(this, "No calendars found", Toast.LENGTH_SHORT).show();
+        }
 
         Spinner spinner = (Spinner) findViewById(R.id.spinnerMacroSettingsCalendar);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -150,32 +135,27 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
     }
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         // save when backing
         save();
         exit();
 //        super.onBackPressed();
     }
 
-    public void deleteMacro(MacroSettingsPanel macroSettingsPanel)
-    {
+    public void deleteMacro(MacroSettingsPanel macroSettingsPanel) {
         removeMacro(macroSettingsPanel);
     }
 
-    public void updateMacro(MacroI macro)
-    {
+    public void updateMacro(MacroI macro) {
         DatabaseHandler.getInstance(this).updateMacro(macro);
     }
 
-    public void btnMacroSettingsClear(View button)
-    {
+    public void btnMacroSettingsClear(View button) {
         final EditText txtTitle = (EditText) findViewById(R.id.txtMacroSettingsTitle);
         txtTitle.setText(R.string.none);
     }
 
-    public void btnMacroSettingsAdd(View button)
-    {
+    public void btnMacroSettingsAdd(View button) {
         final EditText txtTitle = (EditText) findViewById(R.id.txtMacroSettingsTitle);
         String title = txtTitle.getText().toString();
         MacroI m = MacroFactory.createMacro(this, title, selectedKalender);
@@ -184,14 +164,12 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
         txtTitle.setText(R.string.none);
     }
 
-    private void launchSave()
-    {
+    private void launchSave() {
         save();
         exit();
     }
 
-    private void launchCancel()
-    {
+    private void launchCancel() {
         // dont save macro's
         setResult(RESULT_CANCELED, new Intent());
         exit();
@@ -201,8 +179,7 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
      * Create menu
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.macro_settings_menu, menu);
         return true;
     }
@@ -211,11 +188,9 @@ public class MacroSettingsActivity extends Activity implements MacroSettingsHand
      * Handle menu
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.menu_save:
                 launchSave();
                 return true;
